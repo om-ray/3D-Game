@@ -1,0 +1,12 @@
+{
+  "saveAndRun": {
+    "commands": [
+      {
+        "match": "client/*",
+        "cmd": "npm start",
+        "useShortcut": false,
+        "silent": true
+      }
+    ]
+  }
+}
