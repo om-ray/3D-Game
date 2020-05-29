@@ -72,6 +72,14 @@ io.sockets.on("connection", function (socket) {
     socket.broadcast.emit("updated bullet info", bulletInfo);
   });
 
+  socket.on("you took damage", function (id) {
+    for (let i in socketList) {
+      if (id == socketList[i].id) {
+        io.to(socketList[i].socketId).emit("You took damage");
+      }
+    }
+  });
+
   socket.on("disconnect", function () {
     console.log(socket.id + " left the server on " + new Date());
     for (let i in socketList) {

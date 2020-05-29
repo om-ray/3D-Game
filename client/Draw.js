@@ -197,3 +197,8 @@ export let clearCanvas = function () {
 export let clearAmmoCanvas = function () {
   ammoctx.clearRect(0, 0, ammocanvas.width, ammocanvas.height);
 };
+
+export let drawDamageOverlay = function () {
+  ctx.fillStyle = "rgba(255, 0, 0, 0.1)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+};

@@ -1,5 +1,4 @@
 //------------------------------------------------------------------------------------------------//
-let THREE = require("three");
 let Draw = require("./Draw");
 let Enemy = require("./Enemy");
 let Player = require("./Player");
@@ -18,7 +17,6 @@ window.addEventListener("resize", Draw.resize, false);
 window.addEventListener("load", Draw.resize);
 
 let camera = Draw.sendCamera();
-let controls = new PointerLockControls(camera, document.body);
 let skyBBox = Draw.drawSkySphereAndGround();
 
 Draw.getLight();
@@ -50,6 +48,7 @@ let pvpChecker = function () {
           objects.players[i].bulletList[u].substitute != true
         ) {
           objects.players[i].health -= 1;
+          socket.emit("you took damage", objects.players[i].id);
           for (let n in player.bulletList) {
             player.bulletList[n].remove();
             player.bulletList.splice(n, 1);
@@ -79,6 +78,7 @@ let sendBulletInfo = function () {
   if (player.bulletList.length > 0) {
     socket.emit("bullet position", {
       id: player.id,
+      substitute: player.bulletList[player.bulletList.length - 1].substitute,
       bulletsId: player.bulletList[player.bulletList.length - 1].id,
       bulletsX: player.bulletList[player.bulletList.length - 1].mesh.position.x,
       bulletsY: player.bulletList[player.bulletList.length - 1].mesh.position.y,
@@ -90,6 +90,9 @@ let sendBulletInfo = function () {
 let playerLogicRunner = function () {
   for (let i in objects.players) {
     let players = objects.players[i];
+    if (player.attack.shooting && player.ammoLeft > 0) {
+      sendBulletInfo();
+    }
     players.draw();
     Movement.actionChecker(players);
     Movement.mover(players);
@@ -250,7 +253,10 @@ socket.on("updated player info", function (updatedInfo) {
 
 socket.on("updated bullet info", function (bulletInfo) {
   for (let i in objects.players) {
-    if (objects.players[i].id == bulletInfo.id) {
+    if (
+      objects.players[i].id == bulletInfo.id &&
+      bulletInfo.substitute != true
+    ) {
       if (objects.players[i].bulletList.length > 0) {
         objects.players[i].bulletList[
           objects.players[i].bulletList.length - 1
@@ -263,6 +269,16 @@ socket.on("updated bullet info", function (bulletInfo) {
     }
   }
 });
+
+socket.on("You took damage", function () {
+  Draw.drawDamageOverlay();
+  camera.rotation.z = -100;
+  setTimeout(() => {
+    Draw.clearCanvas();
+    camera.rotation.z = 0;
+  }, 100);
+});
+
 /*
 Socket.on's
 ::::END::::
