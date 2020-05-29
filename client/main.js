@@ -276,6 +276,8 @@ socket.on("You took damage", function () {
   setTimeout(() => {
     Draw.clearCanvas();
     camera.rotation.z = 0;
+    camera.rotation.y = 0;
+    camera.rotation.x = 0;
   }, 100);
 });
 
