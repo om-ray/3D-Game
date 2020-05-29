@@ -14,11 +14,38 @@ serv.listen(2000);
 console.log("server up");
 
 let socketList = [];
+let playerList = [];
 
 let io = require("socket.io")(serv, {});
 
+let Player = function () {
+  this.id = Math.floor(10000 + Math.random() * 90000);
+  this.hp = 100;
+  this.maxHp = 100;
+  this.speed = 0.07;
+  this.maxSpeed = 0.09;
+  this.bulletList = [];
+  this.ammoList = [];
+  this.movement = {
+    forward: false,
+    left: false,
+    backwards: false,
+    right: false,
+  };
+
+  this.attack = {
+    shoot: false,
+  };
+
+  this.shoot = function () {
+    socket.emit("shoot");
+  };
+};
+
 io.sockets.on("connection", function (socket) {
   console.log(socket.id + " connected on " + new Date());
+  let player = new Player();
+  playerList.push({ player: player, id: socket.id });
 
   socket.broadcast.emit("New connection", socket.id);
 

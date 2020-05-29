@@ -30,6 +30,12 @@ socket.emit("my id", player.id, player.number);
 let firstEnemy = new Enemy.Enemy();
 objects.enemies.push(firstEnemy);
 
+/* 
+Logic runner functions
+::::::::START:::::::::
+!!!!!!!!!HERE!!!!!!!!!
+*/
+
 let pvpChecker = function () {
   for (let i in objects.players) {
     for (let u in objects.players[i].bulletList) {
@@ -174,9 +180,16 @@ let basicGameLogicRunner = function () {
   }
 };
 
+/* 
+Logic runner functions
+:::::::::END::::::::::
+!!!!!!!!!HERE!!!!!!!!!
+*/
+//---NO MAN'S LAND---//
 /*
-socket.on's go
-!!!!!HERE!!!!!
+Socket.on's
+:::START:::
+!!!HERE!!!!
 */
 
 socket.on("New connection", function (connector) {
@@ -250,9 +263,16 @@ socket.on("updated bullet info", function (bulletInfo) {
     }
   }
 });
-
+/*
+Socket.on's
+::::END::::
+!!!!HERE!!!
+*/
+//---NO MAN'S LAND---//
 /*
 Games main functions
+:::::::START::::::::
+!!!!!!!!HERE!!!!!!!!
 */
 
 let gameLoop = function () {
@@ -272,3 +292,9 @@ let animate = function () {
 setInterval(() => {
   animate();
 }, 10);
+
+/*
+Games main functions
+::::::::END:::::::::
+!!!!!!!!HERE!!!!!!!!
+*/
