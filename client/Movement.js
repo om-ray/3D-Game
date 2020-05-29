@@ -1,14 +1,14 @@
-var THREE = require("three");
-var Draw = require("./Draw");
+let THREE = require("three");
+let Draw = require("./Draw");
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
-// var socket = io();
+// let socket = io();
 
-var camera = Draw.sendCamera();
-var state = {
+let camera = Draw.sendCamera();
+let state = {
   locked: false,
 };
 
-var controls = new PointerLockControls(camera, document.body);
+let controls = new PointerLockControls(camera, document.body);
 
 document.addEventListener("click", function () {
   controls.lock();
@@ -22,11 +22,11 @@ document.addEventListener("keypress", function (e) {
   }
 });
 
-export var sendState = function () {
+export let sendState = function () {
   return state.locked;
 };
 
-export var actionChecker = function (player) {
+export let actionChecker = function (player) {
   if (state.locked) {
     document.addEventListener("keydown", function (e) {
       if (e.key == player.keycodes[0]) {
@@ -81,7 +81,7 @@ export var actionChecker = function (player) {
   }
 };
 
-export var attackChecker = function (player) {
+export let attackChecker = function (player) {
   if (state.locked) {
     document.addEventListener("mousedown", function (e) {
       if (e.button == 0) {
@@ -89,35 +89,32 @@ export var attackChecker = function (player) {
       }
     });
     document.addEventListener("mouseup", function () {
-        player.attack.shooting = false;
+      player.attack.shooting = false;
     });
   }
 };
 
-export var mover = function (player) {
-  if (state.locked == true) {
-    var speed = 0.07;
-    if (player.priority === "yes") {
-      if (player.movementDirection.up) {
-        controls.moveForward(speed);
-      }
-      if (player.movementDirection.left) {
-        controls.moveRight(-speed);
-      }
-      if (player.movementDirection.down) {
-        controls.moveForward(-speed);
-      }
-      if (player.movementDirection.right) {
-        controls.moveRight(speed);
-      }
+export let mover = function (player) {
+  if (player.priority === "yes") {
+    if (player.movementDirection.up) {
+      controls.moveForward(player.speed);
+    }
+    if (player.movementDirection.left) {
+      controls.moveRight(-player.speed);
+    }
+    if (player.movementDirection.down) {
+      controls.moveForward(-player.speed);
+    }
+    if (player.movementDirection.right) {
+      controls.moveRight(player.speed);
     }
   }
 };
 
-var shootingClock = new THREE.Clock({ autoStart: false });
+let shootingClock = new THREE.Clock({ autoStart: false });
 shootingClock.start();
 
-export var attacker = function (player) {
+export let attacker = function (player) {
   if (player.attack.shooting && player.ammoLeft > 0) {
     if (shootingClock.getElapsedTime() >= 0) {
       player.shoot();

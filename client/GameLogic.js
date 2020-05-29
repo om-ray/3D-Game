@@ -1,4 +1,4 @@
-export var collisionChecker = function (a, b) {
+export let collisionChecker = function (a, b) {
   if (a.intersectsBox(b)) {
     return true;
   }

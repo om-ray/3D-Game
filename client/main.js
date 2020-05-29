@@ -1,13 +1,15 @@
 //------------------------------------------------------------------------------------------------//
-var Draw = require("./Draw");
-var Enemy = require("./Enemy");
-var Player = require("./Player");
-var Bullets = require("./Bullets");
-var Logic = require("./GameLogic");
-var Movement = require("./Movement");
-var socket = io();
+let THREE = require("three");
+let Draw = require("./Draw");
+let Enemy = require("./Enemy");
+let Player = require("./Player");
+let Bullets = require("./Bullets");
+let Logic = require("./GameLogic");
+let Movement = require("./Movement");
+let socket = io({ reconnection: false });
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
 
-var objects = {
+let objects = {
   enemies: [],
   players: [],
 };
@@ -15,74 +17,34 @@ var objects = {
 window.addEventListener("resize", Draw.resize, false);
 window.addEventListener("load", Draw.resize);
 
-var camera = Draw.sendCamera();
+let camera = Draw.sendCamera();
+let controls = new PointerLockControls(camera, document.body);
+let skyBBox = Draw.drawSkySphereAndGround();
 
 Draw.getLight();
 Draw.drawSkySphereAndGround();
-var skyBBox = Draw.drawSkySphereAndGround();
-
-var player = new Player.Player(["w", "a", "s", "d"], "yes");
+let player = new Player.Player(["w", "a", "s", "d"], "yes");
 objects.players.push(player);
-socket.emit("my id", player.id);
+socket.emit("my id", player.id, player.number);
 
-socket.on("New connection", function (connector) {
-  console.log("New player connected");
-  var newPlayer = new Player.Player(["w", "a", "s", "d"], "no");
-  objects.players.push(newPlayer);
-  socket.emit("me", { player: player, connector: connector });
-});
-
-socket.on("someone quit", function (id) {
-  console.log("removing!");
-  for (var i in objects.players) {
-    console.log("removing@");
-    if (objects.players[i].id == id) {
-      console.log("removing#");
-      objects.players[i].remove();
-      objects.players.splice(i, 1);
-    }
-  }
-});
-
-socket.on("add them", function (them) {
-  console.log("Other players added");
-  var newPlayer = new Player.Player(["w", "a", "s", "d"], "no");
-  newPlayer.id = them.id;
-  objects.players.push(newPlayer);
-});
-
-socket.on("New players id", function (newId) {
-  if (objects.players.length > 1) {
-    objects.players[objects.players.length - 1].id = newId;
-  }
-});
-
-var firstEnemy = new Enemy.Enemy();
+let firstEnemy = new Enemy.Enemy();
 objects.enemies.push(firstEnemy);
 
-var playerLogicRunner = function () {
-  for (var i in objects.players) {
-    var players = objects.players[i];
-    players.draw();
-    Movement.actionChecker(players);
-    Movement.mover(players);
-    Movement.attackChecker(players);
-    Movement.attacker(players);
-  }
-};
-
-var pvpChecker = function () {
-  for (var i in objects.players) {
-    for (var u in objects.players[i].bulletList) {
+let pvpChecker = function () {
+  for (let i in objects.players) {
+    for (let u in objects.players[i].bulletList) {
       if (
         Logic.collisionChecker(
           objects.players[i].bulletList[u].collisionBBox,
           objects.players[i].collisionBBox
         )
       ) {
-        if (objects.players[i].id != player.id) {
+        if (
+          objects.players[i].id != player.id &&
+          objects.players[i].bulletList[u].substitute != true
+        ) {
           objects.players[i].health -= 1;
-          for (var n in player.bulletList) {
+          for (let n in player.bulletList) {
             player.bulletList[n].remove();
             player.bulletList.splice(n, 1);
           }
@@ -96,35 +58,61 @@ var pvpChecker = function () {
   }
 };
 
-socket.on("updated player health", function (updatedInfo) {
-  objects.players
-    .find(function (player) {
-      return player.id == updatedInfo.id;
-    })
-    .setHealth(updatedInfo.health);
-});
+let sendPlayerInfo = function () {
+  socket.emit("Player info", {
+    id: player.id,
+    x: player.mesh.position.x,
+    y: player.mesh.position.y,
+    z: player.mesh.position.z,
+    rotation: player.mesh.rotation.y,
+    bulletList: player.bulletList.length,
+  });
+};
 
-var enemyLogicRunner = function () {
-  for (var i in objects.enemies) {
-    var enemies = objects.enemies[i];
+let sendBulletInfo = function () {
+  if (player.bulletList.length > 0) {
+    socket.emit("bullet position", {
+      id: player.id,
+      bulletsId: player.bulletList[player.bulletList.length - 1].id,
+      bulletsX: player.bulletList[player.bulletList.length - 1].mesh.position.x,
+      bulletsY: player.bulletList[player.bulletList.length - 1].mesh.position.y,
+      bulletsZ: player.bulletList[player.bulletList.length - 1].mesh.position.z,
+    });
+  }
+};
+
+let playerLogicRunner = function () {
+  for (let i in objects.players) {
+    let players = objects.players[i];
+    players.draw();
+    Movement.actionChecker(players);
+    Movement.mover(players);
+    Movement.attackChecker(players);
+    Movement.attacker(players);
+  }
+};
+
+let enemyLogicRunner = function () {
+  for (let i in objects.enemies) {
+    let enemies = objects.enemies[i];
     enemies.draw();
   }
 };
 
-var basicGameLogicRunner = function () {
+let basicGameLogicRunner = function () {
   Draw.setCanvasStyling();
   Draw.drawCrosshair();
-  for (var u in objects.players) {
-    var players = objects.players[u];
+  for (let u in objects.players) {
+    let players = objects.players[u];
 
-    for (var i in objects.enemies) {
-      var enemies = objects.enemies[i];
+    for (let i in objects.enemies) {
+      let enemies = objects.enemies[i];
 
-      for (var n in objects.players[u].bulletList) {
-        var bullets = objects.players[u].bulletList[n];
+      for (let n in objects.players[u].bulletList) {
+        let bullets = objects.players[u].bulletList[n];
 
-        for (var m in objects.enemies[i].bulletList) {
-          var enemybullets = objects.enemies[i].bulletList[m];
+        for (let m in objects.enemies[i].bulletList) {
+          let enemybullets = objects.enemies[i].bulletList[m];
           if (
             Logic.collisionChecker(
               enemybullets.collisionBBox,
@@ -160,8 +148,8 @@ var basicGameLogicRunner = function () {
         }
       }
 
-      for (var m in objects.enemies[i].bulletList) {
-        var enemybullets = objects.enemies[i].bulletList[m];
+      for (let m in objects.enemies[i].bulletList) {
+        let enemybullets = objects.enemies[i].bulletList[m];
         if (
           Logic.collisionChecker(
             enemybullets.collisionBBox,
@@ -186,81 +174,101 @@ var basicGameLogicRunner = function () {
   }
 };
 
-var updatePlayerValues = function () {
-  socket.on("updated player info", function (updatedInfo) {
-    for (var i in objects.players) {
-      if (objects.players[i].id == updatedInfo.id) {
-        objects.players[i].setPosition(
-          updatedInfo.x,
-          updatedInfo.y,
-          updatedInfo.z,
-          updatedInfo.rotation
+/*
+socket.on's go
+!!!!!HERE!!!!!
+*/
+
+socket.on("New connection", function (connector) {
+  console.log("New player connected");
+  let newPlayer = new Player.Player(["w", "a", "s", "d"], "no");
+  objects.players.push(newPlayer);
+  socket.emit("me", { player: player, connector: connector });
+});
+
+socket.on("someone quit", function (id) {
+  console.log("removing!");
+  for (let i in objects.players) {
+    console.log("removing@");
+    if (objects.players[i].id == id) {
+      console.log("removing#");
+      objects.players[i].remove();
+      objects.players.splice(i, 1);
+    }
+  }
+});
+
+socket.on("add them", function (them) {
+  console.log("Other players added");
+  let newPlayer = new Player.Player(["w", "a", "s", "d"], "no");
+  newPlayer.id = them.id;
+  objects.players.push(newPlayer);
+});
+
+socket.on("New players id", function (newId) {
+  if (objects.players.length > 1) {
+    objects.players[objects.players.length - 1].id = newId;
+  }
+});
+
+socket.on("updated player health", function (updatedInfo) {
+  for (let i in objects.players) {
+    if (objects.players[i].id == updatedInfo.id) {
+      objects.players[i].setHealth(updatedInfo.health);
+    }
+  }
+});
+
+socket.on("updated player info", function (updatedInfo) {
+  for (let i in objects.players) {
+    if (objects.players[i].id == updatedInfo.id) {
+      objects.players[i].setPosition(
+        updatedInfo.x,
+        updatedInfo.y,
+        updatedInfo.z,
+        updatedInfo.rotation
+      );
+      while (updatedInfo.bulletList > objects.players[i].bulletList.length) {
+        objects.players[i].bulletList.push(new Bullets.Bullet(true));
+      }
+    }
+  }
+});
+
+socket.on("updated bullet info", function (bulletInfo) {
+  for (let i in objects.players) {
+    if (objects.players[i].id == bulletInfo.id) {
+      if (objects.players[i].bulletList.length > 0) {
+        objects.players[i].bulletList[
+          objects.players[i].bulletList.length - 1
+        ].setPosition(
+          bulletInfo.bulletsX,
+          bulletInfo.bulletsY,
+          bulletInfo.bulletsZ
         );
       }
     }
-    while (updatedInfo.bulletList > objects.players[i].bulletList.length) {
-      objects.players[i].bulletList.push(new Bullets.Bullet(true));
-    }
-  });
-
-  socket.on("updated bullet info", function (bulletInfo) {
-    for (var i in objects.players) {
-      for (var u in objects.players[i].bulletList) {
-        if (objects.players[i].id == bulletInfo.id) {
-          objects.players[i].bulletList[u].setPosition(
-            bulletInfo.bulletsX,
-            bulletInfo.bulletsY,
-            bulletInfo.bulletsZ,
-            bulletInfo.bulletsRotationX,
-            bulletInfo.bulletsRotationY,
-            bulletInfo.bulletsRotationZ
-          );
-          // objects.players[i].bulletList[u].updateBBox();
-        }
-      }
-    }
-  });
-};
-
-var sendPlayerInfo = function () {
-  socket.emit("Player info", {
-    id: player.id,
-    x: player.mesh.position.x,
-    y: player.mesh.position.y,
-    z: player.mesh.position.z,
-    rotation: player.mesh.rotation.y,
-    bulletList: player.bulletList.length,
-  });
-
-  if (player.bulletList.length > 0) {
-    socket.emit("bullet position", {
-      id: player.id,
-      bulletsX: player.bulletList[player.bulletList.length - 1].mesh.position.x,
-      bulletsY: player.bulletList[player.bulletList.length - 1].mesh.position.y,
-      bulletsZ: player.bulletList[player.bulletList.length - 1].mesh.position.z,
-      bulletsRotationX:
-        player.bulletList[player.bulletList.length - 1].mesh.rotation.x,
-      bulletsRotationY:
-        player.bulletList[player.bulletList.length - 1].mesh.rotation.y,
-      bulletsRotationZ:
-        player.bulletList[player.bulletList.length - 1].mesh.rotation.z,
-    });
   }
-};
+});
 
-var gameLoop = function () {
+/*
+Games main functions
+*/
+
+let gameLoop = function () {
   sendPlayerInfo();
-  updatePlayerValues();
   basicGameLogicRunner();
   pvpChecker();
   playerLogicRunner();
+  sendBulletInfo();
 };
 
-var animate = function () {
-  // enemyLogicRunner();
+let animate = function () {
+  //enemyLogicRunner();
   gameLoop();
   Draw.render();
-  requestAnimationFrame(animate);
 };
 
-animate();
+setInterval(() => {
+  animate();
+}, 10);

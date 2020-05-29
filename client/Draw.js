@@ -1,55 +1,55 @@
-var THREE = require("three");
-var {
+let THREE = require("three");
+let {
   CSS2DRenderer,
 } = require("three/examples/jsm/renderers/CSS2DRenderer.js");
 
-var canvas = document.getElementById("mainGame");
-var ctx = canvas.getContext("2d");
-var ammocanvas = document.getElementById("ammo");
-var ammoctx = ammocanvas.getContext("2d");
-var width = "100vw";
-var height = "100vh";
+let canvas = document.getElementById("mainGame");
+let ctx = canvas.getContext("2d");
+let ammocanvas = document.getElementById("ammo");
+let ammoctx = ammocanvas.getContext("2d");
+let width = "100vw";
+let height = "100vh";
 canvas.width = width;
 canvas.height = height;
 ammocanvas.width = 100;
 ammocanvas.height = 100;
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.01,
   1000
 );
-var grassTexture = new THREE.TextureLoader().load("/Assets/textures/grass.png");
+let grassTexture = new THREE.TextureLoader().load("/Assets/textures/grass.png");
 
-export var sendCamera = function () {
+export let sendCamera = function () {
   return camera;
 };
 
 //Camera Positioning
 camera.position.z = Math.floor(Math.random() * 50);
 camera.position.x = Math.floor(Math.random() * 50);
-camera.position.y = 1;
+camera.position.y = 1.5;
 
-export var drawCrosshair = function () {
-  var material = new THREE.LineBasicMaterial({
+export let drawCrosshair = function () {
+  let material = new THREE.LineBasicMaterial({
     color: 0xffffff,
     linewidth: 5,
   });
-  var x = 0.01;
-  var y = 0.01;
-  var geometry = new THREE.Geometry();
+  let x = 0.01;
+  let y = 0.01;
+  let geometry = new THREE.Geometry();
   geometry.vertices.push(new THREE.Vector3(0, y, 0));
   geometry.vertices.push(new THREE.Vector3(0, -y, 0));
   geometry.vertices.push(new THREE.Vector3(0, 0, 0));
   geometry.vertices.push(new THREE.Vector3(x, 0, 0));
   geometry.vertices.push(new THREE.Vector3(-x, 0, 0));
 
-  var crosshair = new THREE.Line(geometry, material);
-  var crosshairPercentX = 50;
-  var crosshairPercentY = 50;
-  var crosshairPositionX = (crosshairPercentX / 100) * 2 - 1;
-  var crosshairPositionY = (crosshairPercentY / 100) * 2 - 1;
+  let crosshair = new THREE.Line(geometry, material);
+  let crosshairPercentX = 50;
+  let crosshairPercentY = 50;
+  let crosshairPositionX = (crosshairPercentX / 100) * 2 - 1;
+  let crosshairPositionY = (crosshairPercentY / 100) * 2 - 1;
   crosshair.position.x = crosshairPositionX * camera.aspect;
   crosshair.position.y = crosshairPositionY;
   crosshair.position.z = -0.3;
@@ -57,41 +57,41 @@ export var drawCrosshair = function () {
   scene.add(camera);
 };
 
-export var drawSkySphereAndGround = function () {
+export let drawSkySphereAndGround = function () {
   //skyShpere
-  var geometry = new THREE.BufferGeometry().fromGeometry(
+  let skyGeometry = new THREE.BufferGeometry().fromGeometry(
     new THREE.SphereGeometry(250, 500, 500)
   );
-  // var texture = new THREE.TextureLoader().load("Assets/textures/sky.jpg");
+  // let texture = new THREE.TextureLoader().load("Assets/textures/sky.jpg");
   // texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   // texture.repeat.set(5, 5);
-  var material = new THREE.MeshBasicMaterial({
-    color: 0x3977e3,
+  let skyMaterial = new THREE.MeshBasicMaterial({
     wireframe: false,
     side: THREE.BackSide,
   });
-  var skyShpere = new THREE.Mesh(geometry, material);
-  var skyBBox = new THREE.Box3();
-  var skyBBoxHelper = new THREE.Box3Helper(skyBBox, 0x00ff00);
+  let skyShpere = new THREE.Mesh(skyGeometry, skyMaterial);
+  let skyBBox = new THREE.Box3();
+  let skyBBoxHelper = new THREE.Box3Helper(skyBBox, 0x00ff00);
   skyShpere.geometry.computeBoundingBox();
   skyBBox
     .copy(skyShpere.geometry.boundingBox)
     .applyMatrix4(skyShpere.matrixWorld);
-  scene.add(skyShpere);
+  // scene.add(skyShpere);
   scene.add(skyBBoxHelper);
   skyBBoxHelper.visible = false;
 
   //Ground
-  var geometry = new THREE.BufferGeometry().fromGeometry(
+  let groudGeometry = new THREE.BufferGeometry().fromGeometry(
     new THREE.PlaneGeometry(500, 500)
   );
   grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
   grassTexture.repeat.set(5000, 5000);
-  var material = new THREE.MeshPhongMaterial({
+  let groundMaterial = new THREE.MeshStandardMaterial({
     map: grassTexture,
     wireframe: false,
+    roughness: 1,
   });
-  var ground = new THREE.Mesh(geometry, material);
+  let ground = new THREE.Mesh(groudGeometry, groundMaterial);
   ground.receiveShadow = true;
   scene.add(ground);
   ground.rotation.x = 98.962;
@@ -100,7 +100,7 @@ export var drawSkySphereAndGround = function () {
   return skyBBox;
 };
 
-export var resize = function () {
+export let resize = function () {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   ammocanvas.width = 100;
@@ -111,59 +111,59 @@ export var resize = function () {
   labelRenderer.setSize(window.innerWidth, window.innerHeight);
 };
 
-export var drawMesh = function (mesh) {
+export let drawMesh = function (mesh) {
   scene.add(mesh);
 };
 
-export var drawMessage = function (message) {
+export let drawMessage = function (message) {
   ctx.fillText(message, canvas.width / 2, canvas.height / 2);
 };
 
-export var removeMesh = function (mesh) {
+export let removeMesh = function (mesh) {
   scene.remove(mesh);
 };
 
-export var followCameraPlayer = function (mesh) {
+export let followCameraPlayer = function (mesh) {
   mesh.position.copy(camera.position);
   mesh.rotation.y = camera.rotation.y;
 };
 
-export var followCamera = function (mesh) {
+export let followCamera = function (mesh) {
   mesh.position.copy(camera.position);
   mesh.rotation.copy(camera.rotation);
 };
 
-export var lookAtCamera = function (mesh) {
+export let lookAtCamera = function (mesh) {
   mesh.lookAt(camera.position.x, camera.position.y, camera.position.z);
 };
 
-var renderer = new THREE.WebGLRenderer({ antialias: true });
+let renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor("#eee");
+renderer.setClearColor("#00b0d4");
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
-var labelRenderer = new CSS2DRenderer({ antialias: true });
+let labelRenderer = new CSS2DRenderer({ antialias: true });
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = 0;
 document.body.appendChild(labelRenderer.domElement);
 
-export var render = function () {
+export let render = function () {
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 };
 
-export var getLight = function () {
-  var spotLight = new THREE.SpotLight(0xffffff, 0.25);
+export let getLight = function () {
+  let spotLight = new THREE.SpotLight(0xffffff, 0.25);
   spotLight.position.set(0, 100, 0);
   spotLight.castShadow = true;
   spotLight.shadow.mapSize.width = 4069;
   spotLight.shadow.mapSize.height = 4069;
   scene.add(spotLight);
 
-  var light = new THREE.PointLight(0xffffff, 4, 100, 2);
+  let light = new THREE.PointLight(0xffffff, 4, 100, 2);
   light.position.set(0, 80, 0);
   // light.castShadow = true;
   light.shadow.mapSize.width = 4069;
@@ -171,11 +171,11 @@ export var getLight = function () {
   light.shadow.radius = 0.01;
   scene.add(light);
 
-  var ambientLight = new THREE.AmbientLight(0xfffccc, 1.1);
+  let ambientLight = new THREE.AmbientLight(0xfffccc, 1.1);
   scene.add(ambientLight);
 };
 
-export var setCanvasStyling = function () {
+export let setCanvasStyling = function () {
   ammoctx.font = "25px Courier New";
   ammoctx.textAlign = "center";
   ammoctx.textBaseline = "middle";
@@ -185,15 +185,15 @@ export var setCanvasStyling = function () {
   ctx.textBaseline = "middle";
 };
 
-export var drawAmmo = function (ammo) {
+export let drawAmmo = function (ammo) {
   clearAmmoCanvas();
   ammoctx.fillText(ammo, ammocanvas.width / 2, ammocanvas.height / 2);
 };
 
-export var clearCanvas = function () {
+export let clearCanvas = function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-export var clearAmmoCanvas = function () {
+export let clearAmmoCanvas = function () {
   ammoctx.clearRect(0, 0, ammocanvas.width, ammocanvas.height);
 };

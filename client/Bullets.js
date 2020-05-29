@@ -1,29 +1,28 @@
-var THREE = require("three");
-var Draw = require("./Draw");
+let THREE = require("three");
+let Draw = require("./Draw");
 
-var playerBulletTexture = new THREE.TextureLoader().load(
+let playerBulletTexture = new THREE.TextureLoader().load(
   "/Assets/textures/brass.jpg"
 );
 
-var playerBulletgeometry = new THREE.BufferGeometry().fromGeometry(
+let playerBulletgeometry = new THREE.BufferGeometry().fromGeometry(
   new THREE.SphereGeometry(0.02, 32, 32)
 );
 
-var playerBulletMaterial = new THREE.MeshBasicMaterial({
+let playerBulletMaterial = new THREE.MeshBasicMaterial({
   map: playerBulletTexture,
   wireframe: false,
 });
 
-var playerBulletSubstituteMaterial = new THREE.MeshBasicMaterial({
+let playerBulletSubstituteMaterial = new THREE.MeshBasicMaterial({
   color: 0xffffff,
   wireframe: false,
 });
 
-export var Bullet = function (substitute) {
+export let Bullet = function (substitute) {
   this.type = "Bullet";
+  this.id = Math.floor(100000 + Math.random() * 900000);
   this.substitute = substitute;
-  // this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
-  // this.texture.repeat.set(50, 50);
   if (this.substitute !== true) {
     this.mesh = new THREE.Mesh(playerBulletgeometry, playerBulletMaterial);
   } else if (this.substitute == true) {
@@ -53,13 +52,10 @@ export var Bullet = function (substitute) {
     Draw.removeMesh(this.geometry);
   };
 
-  this.setPosition = function (x, y, z, rotationX, rotationY, rotationZ) {
+  this.setPosition = function (x, y, z) {
     this.mesh.position.x = x;
     this.mesh.position.y = y;
     this.mesh.position.z = z;
-    this.mesh.rotation.x = rotationX;
-    this.mesh.rotation.y = rotationY;
-    this.mesh.rotation.z = rotationZ;
     this.updateBBox();
   };
 
@@ -70,20 +66,20 @@ export var Bullet = function (substitute) {
   };
 };
 
-var enemyBulletTexture = new THREE.TextureLoader().load(
+let enemyBulletTexture = new THREE.TextureLoader().load(
   "/Assets/textures/slime.jpg"
 );
 
-var enemyBulletgeometry = new THREE.BufferGeometry().fromGeometry(
+let enemyBulletgeometry = new THREE.BufferGeometry().fromGeometry(
   new THREE.SphereGeometry(0.1, 4, 2)
 );
 
-var enemyBulletmaterial = new THREE.MeshBasicMaterial({
+let enemyBulletmaterial = new THREE.MeshBasicMaterial({
   map: enemyBulletTexture,
   wireframe: false,
 });
 
-export var enemyBullet = function (enemy) {
+export let enemyBullet = function (enemy) {
   this.type = "enemyBullet";
   this.enemy = enemy;
   this.mesh = new THREE.Mesh(enemyBulletgeometry, enemyBulletmaterial);

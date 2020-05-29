@@ -8,18 +8,30 @@ var camera = Draw.sendCamera();
 var geometry = new THREE.BufferGeometry().fromGeometry(
   new THREE.CylinderGeometry(0.5, 0.5, 2, 8, 1)
 );
+
+function getRandomColor() {
+  var letters = "0123456789ABCDEF";
+  var color = "#";
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 var material = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
+  color: getRandomColor(),
   wireframe: false,
 });
 
 var body = document.getElementById("body");
 
 export var Player = function (keycodes, priority) {
+  this.number = Math.floor(Math.random() * 10000);
   this.type = "Player";
   this.id = Math.floor(1000 + Math.random() * 9000);
   this.totalAmmo = 500;
   this.priority = priority;
+  this.speed = 0.07;
   if (this.priority === "yes") {
     var healthValue = document.createElement("p");
     var healthContainer = document.createElement("div");
