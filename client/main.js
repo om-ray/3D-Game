@@ -49,6 +49,7 @@ let pvpChecker = function () {
         ) {
           objects.players[i].health -= 1;
           if (objects.players[i].health <= 0) {
+            objects.players[i].respawn();
             player.score += 1;
           }
           socket.emit("you took damage", objects.players[i].id);
@@ -278,7 +279,7 @@ socket.on("You took damage", function () {
   Draw.drawDamageOverlay();
   setTimeout(() => {
     Draw.clearCanvas();
-  }, 100);
+  }, 250);
 });
 
 /*

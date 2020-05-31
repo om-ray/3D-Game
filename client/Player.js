@@ -170,7 +170,6 @@ export var Player = function (keycodes, priority) {
       this.state.reloading = false;
     }
     if (this.health <= 0) {
-      this.respawn();
       this.health = 100;
     }
   };
