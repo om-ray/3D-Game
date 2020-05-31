@@ -32,6 +32,7 @@ export var Player = function (keycodes, priority) {
   this.totalAmmo = 500;
   this.priority = priority;
   this.speed = 0.07;
+  this.score = 0;
   if (this.priority === "yes") {
     var healthValue = document.createElement("p");
     var healthContainer = document.createElement("div");

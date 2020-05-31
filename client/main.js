@@ -48,6 +48,9 @@ let pvpChecker = function () {
           objects.players[i].bulletList[u].substitute != true
         ) {
           objects.players[i].health -= 1;
+          if (objects.players[i].health <= 0) {
+            player.score += 1;
+          }
           socket.emit("you took damage", objects.players[i].id);
           for (let n in player.bulletList) {
             player.bulletList[n].remove();
@@ -94,6 +97,7 @@ let playerLogicRunner = function () {
       sendBulletInfo();
     }
     players.draw();
+    Draw.drawScore(player.score);
     Movement.actionChecker(players);
     Movement.mover(players);
     Movement.attackChecker(players);
@@ -272,12 +276,8 @@ socket.on("updated bullet info", function (bulletInfo) {
 
 socket.on("You took damage", function () {
   Draw.drawDamageOverlay();
-  camera.rotation.z = -100;
   setTimeout(() => {
     Draw.clearCanvas();
-    camera.rotation.z = 0;
-    camera.rotation.y = 0;
-    camera.rotation.x = 0;
   }, 100);
 });
 

@@ -16,6 +16,16 @@ canvas {
   margin: 10px;
 }
 
+#score {
+  right: 0;
+  position: absolute;
+  border: rgb(187, 159, 0) 3px outset;
+  background-color: lightgray;
+  border-radius: 20px;
+  opacity: 70%;
+  margin: 10px;
+}
+
 .healthExtra {
   width: 300px;
   height: 30px;

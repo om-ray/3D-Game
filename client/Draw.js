@@ -7,12 +7,16 @@ let canvas = document.getElementById("mainGame");
 let ctx = canvas.getContext("2d");
 let ammocanvas = document.getElementById("ammo");
 let ammoctx = ammocanvas.getContext("2d");
+let scorecanvas = document.getElementById("score");
+let scorectx = scorecanvas.getContext("2d");
 let width = "100vw";
 let height = "100vh";
 canvas.width = width;
 canvas.height = height;
 ammocanvas.width = 100;
 ammocanvas.height = 100;
+scorecanvas.width = 100;
+scorecanvas.height = 100;
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(
   75,
@@ -176,11 +180,14 @@ export let getLight = function () {
 };
 
 export let setCanvasStyling = function () {
-  ammoctx.font = "25px Courier New";
+  scorectx.font = "25px Cousine-regular";
+  scorectx.textAlign = "center";
+  scorectx.textBaseline = "middle";
+  ammoctx.font = "25px Cousine-regular";
   ammoctx.textAlign = "center";
   ammoctx.textBaseline = "middle";
   ctx.fillStyle = "red";
-  ctx.font = "30px Courier New";
+  ctx.font = "30px Cousine-regular";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 };
@@ -190,12 +197,21 @@ export let drawAmmo = function (ammo) {
   ammoctx.fillText(ammo, ammocanvas.width / 2, ammocanvas.height / 2);
 };
 
+export let drawScore = function (score) {
+  clearScoreCanvas();
+  scorectx.fillText(score, scorecanvas.width / 2, scorecanvas.height / 2);
+};
+
 export let clearCanvas = function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
 export let clearAmmoCanvas = function () {
   ammoctx.clearRect(0, 0, ammocanvas.width, ammocanvas.height);
+};
+
+export let clearScoreCanvas = function () {
+  scorectx.clearRect(0, 0, scorecanvas.width, scorecanvas.height);
 };
 
 export let drawDamageOverlay = function () {
