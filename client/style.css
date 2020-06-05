@@ -1,9 +1,223 @@
+* {
+  transition: ease-in-out 0.15s;
+}
+
 body {
+  position: relative;
   margin: 0;
+  overflow: hidden;
 }
 
 canvas {
-  display: block;
+  display: none;
+}
+
+input {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+input:focus {
+  outline: none;
+}
+
+button:focus {
+  outline: none;
+}
+
+#titleDiv {
+  position: absolute;
+  text-align: center;
+  position: absolute;
+  top: 0;
+  margin-top: 5vh;
+}
+
+#title {
+  font-family: "megrim";
+  font-size: 15vh;
+}
+
+#logInSignUpDiv {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url(./Assets/Images/loginImage.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: none;
+}
+
+#signUpDiv {
+  position: absolute;
+  display: flex;
+  justify-self: center;
+  bottom: 0;
+  flex-direction: column;
+  justify-content: center;
+  font-family: "montserrat";
+  align-items: center;
+  border-radius: 20px;
+  /* width: 100vw;
+  height: 100vh; */
+}
+
+#container {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: "montserrat";
+  align-items: center;
+  background-color: rgb(233, 233, 233);
+  width: 250px;
+  height: 350px;
+  border-radius: 20px;
+  border: black ridge 1.5px;
+}
+
+#signUpContainer {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: "montserrat";
+  align-items: center;
+  bottom: 0;
+  border-radius: 20px;
+  margin-bottom: 3vh;
+}
+
+#signInContainer {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: "montserrat";
+  align-items: center;
+  bottom: 0;
+  border-radius: 20px;
+  margin-bottom: 3vh;
+}
+
+#container > p {
+  font-family: "montserrat";
+}
+
+#signUpContainer > p {
+  font-family: "montserrat";
+}
+
+#signInContainer > p {
+  font-family: "montserrat";
+}
+
+#container > input {
+  font-family: "montserrat";
+  font-size: 12px;
+  color: #000000;
+  border-color: #b3b3b3;
+  padding: 10px;
+  height: 40px;
+  width: 200px;
+  border-radius: 20px;
+}
+
+#container > input:active {
+  border-color: black;
+  width: 210px;
+  height: 50px;
+}
+
+#container > input:focus {
+  border-color: black;
+  width: 210px;
+  height: 50px;
+}
+
+#container > input::placeholder {
+  text-align: center;
+}
+
+#container > button {
+  margin-top: 50px;
+  font-family: "montserrat";
+  width: 200px;
+  height: 40px;
+  border-radius: 100px;
+  background-color: #000000;
+  color: white;
+  border: solid 2px rgb(255, 255, 255);
+}
+
+#container > button:hover {
+  background-color: #005070;
+  color: white;
+}
+
+#container > button:active {
+  width: 180px;
+  height: 30px;
+  font-size: 10px;
+  background-color: #002d3f;
+  color: white;
+}
+
+#signUpContainer > button {
+  font-family: "montserrat";
+  width: 200px;
+  height: 40px;
+  border-radius: 100px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: solid 2px black;
+}
+
+#signInContainer > button {
+  font-family: "montserrat";
+  width: 200px;
+  height: 40px;
+  border-radius: 100px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: solid 2px rgb(0, 0, 0);
+}
+
+#signUpContainer > button:hover {
+  background-color: #005070;
+  color: white;
+}
+
+#signInContainer > button:hover {
+  background-color: #005070;
+  color: white;
+}
+
+#signUpContainer > button:active {
+  width: 180px;
+  height: 30px;
+  font-size: 10px;
+  background-color: #002d3f;
+  color: white;
+}
+
+#signInContainer > button:active {
+  width: 180px;
+  height: 30px;
+  font-size: 10px;
+  background-color: #002d3f;
+  color: white;
+}
+
+#gameContainerDiv {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  display: none;
 }
 
 #ammo {

@@ -9,6 +9,7 @@ let ammocanvas = document.getElementById("ammo");
 let ammoctx = ammocanvas.getContext("2d");
 let scorecanvas = document.getElementById("score");
 let scorectx = scorecanvas.getContext("2d");
+let gameContainerDiv = document.getElementById("gameContainerDiv");
 let width = "100vw";
 let height = "100vh";
 canvas.width = width;
@@ -146,13 +147,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor("#00b0d4");
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.body.appendChild(renderer.domElement);
+gameContainerDiv.appendChild(renderer.domElement);
 
 let labelRenderer = new CSS2DRenderer({ antialias: true });
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = 0;
-document.body.appendChild(labelRenderer.domElement);
+gameContainerDiv.appendChild(labelRenderer.domElement);
 
 export let render = function () {
   renderer.render(scene, camera);

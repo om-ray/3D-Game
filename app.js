@@ -1,6 +1,29 @@
 let express = require("express");
 let app = express();
 let serv = require("http").Server(app);
+const Sequelize = require("sequelize");
+
+const db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
+  host: "localhost",
+  port: "5432",
+  dialect: "postgres",
+});
+
+db.authenticate()
+  .then(function () {
+    console.log("Database connected");
+  })
+  .catch(function (err) {
+    console.log("Error:", err);
+  });
+
+let Accounts = db.define("Accounts", {
+  Email: Sequelize.TEXT,
+  Username: Sequelize.TEXT,
+  Password: Sequelize.TEXT,
+});
+
+db.sync();
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/client/index.html");
@@ -43,7 +66,9 @@ let Player = function () {
 };
 
 io.sockets.on("connection", function (socket) {
-  console.log(socket.id + " connected on " + new Date());
+  console.log(
+    socket.id + " joined the server on " + new Date().toLocaleString()
+  );
   let player = new Player();
   playerList.push({ player: player, id: socket.id });
 
@@ -53,6 +78,37 @@ io.sockets.on("connection", function (socket) {
     console.log(`Player ${number}'s id: ${id}`);
     socket.broadcast.emit("New players id", id);
     socketList.push({ socketId: socket.id, id: id });
+  });
+
+  socket.on("sign in attempt", function (username, password) {
+    Accounts.findOne({
+      where: { Username: username, Password: password },
+    }).then(function (accountExists) {
+      if (accountExists != null) {
+        socket.emit("log in successful");
+      }
+      if (accountExists == null) {
+        socket.emit("log in unsuccessful");
+      }
+    });
+  });
+
+  socket.on("sign up attempt", function (email, username, password) {
+    Accounts.findOne({ where: { Email: email } }).then(function (
+      accountExists
+    ) {
+      if (accountExists == null) {
+        Accounts.create({
+          Email: email,
+          Username: username,
+          Password: password,
+        });
+        socket.emit("account created");
+      }
+      if (accountExists != null) {
+        socket.emit("account exists");
+      }
+    });
   });
 
   socket.on("Player info", function (playerinfo) {
@@ -81,7 +137,9 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on("disconnect", function () {
-    console.log(socket.id + " left the server on " + new Date());
+    console.log(
+      socket.id + " left the server on " + new Date().toLocaleString()
+    );
     for (let i in socketList) {
       if (socket.id == socketList[i].socketId) {
         socket.broadcast.emit("someone quit", socketList[i].id);

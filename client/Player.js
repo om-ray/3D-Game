@@ -23,7 +23,7 @@ var material = new THREE.MeshBasicMaterial({
   wireframe: false,
 });
 
-var body = document.getElementById("body");
+var container = document.getElementById("gameContainerDiv");
 
 export var Player = function (keycodes, priority) {
   this.number = Math.floor(Math.random() * 10000);
@@ -42,7 +42,7 @@ export var Player = function (keycodes, priority) {
     healthValue.id = this.id;
     healthContainer.appendChild(healthBar);
     healthContainer.appendChild(healthValue);
-    body.appendChild(healthContainer);
+    container.appendChild(healthContainer);
     healthContainer.classList.add("health");
     healthContainer.classList.add("healthContainer");
     healthBar.classList.add("healthBar");

@@ -5,13 +5,72 @@
     <link rel="icon" href="/Assets/Images/favicon_io/apple-touch-icon.png" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Megrim&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
     <title>Three.js game</title>
   </head>
   <body id="body">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
-    <canvas id="score"></canvas>
-    <canvas id="ammo"></canvas>
-    <canvas id="mainGame"></canvas>
+
+    <div id="logInSignUpDiv">
+      <div id="titleDiv">
+        <h1 id="title">WaR</h1>
+      </div>
+      <div id="container" class="well">
+        <p id="email" style="display: none;">EMAIL</p>
+        <input
+          type="email"
+          id="emailInput"
+          class="well well-sm"
+          placeholder="ENTER EMAIL"
+          style="display: none;"
+        />
+        <p id="username">USERNAME</p>
+        <input
+          type="text"
+          id="usernameInput"
+          class="well well-sm"
+          placeholder="ENTER USERNAME"
+        />
+        <p id="password">PASSWORD</p>
+        <input
+          type="password"
+          id="passwordInput"
+          class="well well-sm"
+          placeholder="ENTER PASSWORD"
+        />
+        <button id="signInBtn">SIGN IN</button>
+        <button id="registerBtn" style="display: none;">
+          SIGN UP
+        </button>
+      </div>
+      <div id="signUpDiv">
+        <div id="signUpContainer">
+          <p id="don'tHaveAccount">Don't have an account?</p>
+          <button id="signUpBtn">SIGN UP</button>
+        </div>
+        <div id="signInContainer" style="display: none;">
+          <p id="alreadyHaveAccount">Already have an account?</p>
+          <button id="LogInBtn">SIGN IN</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="gameContainerDiv" style="display: none; position: absolute;">
+      <canvas id="score"></canvas>
+      <canvas id="ammo"></canvas>
+      <canvas id="mainGame"></canvas>
+    </div>
     <script src="../dist/main.js"></script>
   </body>
 </html>

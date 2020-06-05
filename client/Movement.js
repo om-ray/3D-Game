@@ -1,8 +1,8 @@
 let THREE = require("three");
 let Draw = require("./Draw");
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
+let gameContainerDiv = document.getElementById("gameContainerDiv");
 // let socket = io();
-
 let camera = Draw.sendCamera();
 let state = {
   locked: false,
@@ -10,12 +10,12 @@ let state = {
 
 let controls = new PointerLockControls(camera, document.body);
 
-document.addEventListener("click", function () {
+gameContainerDiv.addEventListener("click", function () {
   controls.lock();
   state.locked = true;
 });
 
-document.addEventListener("keypress", function (e) {
+gameContainerDiv.addEventListener("keypress", function (e) {
   if (e.keyCode == 27) {
     controls.unlock();
     state.locked = false;
