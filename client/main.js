@@ -6,26 +6,19 @@ let Bullets = require("./Bullets");
 let Logic = require("./GameLogic");
 let Movement = require("./Movement");
 let socket = io({ reconnection: false });
-let everything = document.querySelectorAll("*");
 let logInSignUpDiv = document.getElementById("logInSignUpDiv");
 let container = document.getElementById("container");
 let email = document.getElementById("email");
 let emailInput = document.getElementById("emailInput");
-let username = document.getElementById("username");
 let usernameInput = document.getElementById("usernameInput");
-let password = document.getElementById("password");
 let passwordInput = document.getElementById("passwordInput");
 let signInBtn = document.getElementById("signInBtn");
-let signUpDiv = document.getElementById("signUpDiv");
 let signUpContainer = document.getElementById("signUpContainer");
 let signUpBtn = document.getElementById("signUpBtn");
 let signInContainer = document.getElementById("signInContainer");
 let gameContainerDiv = document.getElementById("gameContainerDiv");
 let LogInBtn = document.getElementById("LogInBtn");
 let registerBtn = document.getElementById("registerBtn");
-let score = document.getElementById("score");
-let ammo = document.getElementById("ammo");
-let mainGame = document.getElementById("mainGame");
 let loggedIn = false;
 let logIn = true;
 let signUp = false;
@@ -201,12 +194,6 @@ let playerLogicRunner = function () {
   }
 };
 
-let enemyLogicRunner = function () {
-  for (let i in objects.enemies) {
-    let enemies = objects.enemies[i];
-    enemies.draw();
-  }
-};
 
 let basicGameLogicRunner = function () {
   Draw.setCanvasStyling();
