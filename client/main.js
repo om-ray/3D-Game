@@ -35,6 +35,9 @@ let objects = {
   players: [],
 };
 
+let player = new Player.Player(["w", "a", "s", "d"], "yes");
+objects.players.push(player);
+
 window.addEventListener("resize", Draw.resize, false);
 window.addEventListener("load", Draw.resize);
 
@@ -136,18 +139,18 @@ let pvpChecker = function () {
         )
       ) {
         if (
-          objects.players[i].id != objects.players[0].id &&
+          objects.players[i].id != player.id &&
           objects.players[i].bulletList[u].substitute != true
         ) {
           objects.players[i].health -= 1;
           if (objects.players[i].health <= 0) {
             objects.players[i].respawn();
-            objects.players[0].score += 1;
+            player.score += 1;
           }
           socket.emit("you took damage", objects.players[i].id);
-          for (let n in objects.players[0].bulletList) {
-            objects.players[0].bulletList[n].remove();
-            objects.players[0].bulletList.splice(n, 1);
+          for (let n in player.bulletList) {
+            player.bulletList[n].remove();
+            player.bulletList.splice(n, 1);
           }
           socket.emit("Player health", {
             id: objects.players[i].id,
@@ -161,34 +164,24 @@ let pvpChecker = function () {
 
 let sendPlayerInfo = function () {
   socket.emit("Player info", {
-    id: objects.players[0].id,
-    x: objects.players[0].mesh.position.x,
-    y: objects.players[0].mesh.position.y,
-    z: objects.players[0].mesh.position.z,
-    rotation: objects.players[0].mesh.rotation.y,
-    bulletList: objects.players[0].bulletList.length,
+    id: player.id,
+    x: player.mesh.position.x,
+    y: player.mesh.position.y,
+    z: player.mesh.position.z,
+    rotation: player.mesh.rotation.y,
+    bulletList: player.bulletList.length,
   });
 };
 
 let sendBulletInfo = function () {
-  if (objects.players[0].bulletList.length > 0) {
+  if (player.bulletList.length > 0) {
     socket.emit("bullet position", {
-      id: objects.players[0].id,
-      substitute:
-        objects.players[0].bulletList[objects.players[0].bulletList.length - 1]
-          .substitute,
-      bulletsId:
-        objects.players[0].bulletList[objects.players[0].bulletList.length - 1]
-          .id,
-      bulletsX:
-        objects.players[0].bulletList[objects.players[0].bulletList.length - 1]
-          .mesh.position.x,
-      bulletsY:
-        objects.players[0].bulletList[objects.players[0].bulletList.length - 1]
-          .mesh.position.y,
-      bulletsZ:
-        objects.players[0].bulletList[objects.players[0].bulletList.length - 1]
-          .mesh.position.z,
+      id: player.id,
+      substitute: player.bulletList[player.bulletList.length - 1].substitute,
+      bulletsId: player.bulletList[player.bulletList.length - 1].id,
+      bulletsX: player.bulletList[player.bulletList.length - 1].mesh.position.x,
+      bulletsY: player.bulletList[player.bulletList.length - 1].mesh.position.y,
+      bulletsZ: player.bulletList[player.bulletList.length - 1].mesh.position.z,
     });
   }
 };
@@ -196,11 +189,11 @@ let sendBulletInfo = function () {
 let playerLogicRunner = function () {
   for (let i in objects.players) {
     let players = objects.players[i];
-    if (objects.players[0].attack.shooting && objects.players[0].ammoLeft > 0) {
+    if (player.attack.shooting && player.ammoLeft > 0) {
       sendBulletInfo();
     }
     players.draw();
-    Draw.drawScore(objects.players[0].score);
+    Draw.drawScore(player.score);
     Movement.actionChecker(players);
     Movement.mover(players);
     Movement.attackChecker(players);
@@ -306,8 +299,6 @@ socket.on("log in successful", function () {
   loggedIn = true;
   logInSignUpDiv.style.display = "none";
   gameContainerDiv.style.display = "inline-block";
-  let player = new Player.Player(["w", "a", "s", "d"], "yes");
-  objects.players.push(player);
   socket.emit("my id", player.id, player.number);
 });
 
@@ -337,7 +328,7 @@ socket.on("account exists", function () {
 socket.on("New connection", function (connector) {
   let newPlayer = new Player.Player(["w", "a", "s", "d"], "no");
   objects.players.push(newPlayer);
-  socket.emit("me", { player: objects.players[0], connector: connector });
+  socket.emit("me", { player: player, connector: connector });
 });
 
 socket.on("someone quit", function (id) {
