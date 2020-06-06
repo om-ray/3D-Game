@@ -194,7 +194,6 @@ let playerLogicRunner = function () {
   }
 };
 
-
 let basicGameLogicRunner = function () {
   Draw.setCanvasStyling();
   Draw.drawCrosshair();
