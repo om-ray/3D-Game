@@ -73,6 +73,7 @@ button:focus {
   justify-content: center;
   font-family: "montserrat";
   align-items: center;
+  text-align: center;
   background-color: rgb(233, 233, 233);
   width: 250px;
   height: 350px;
@@ -294,4 +295,74 @@ button:focus {
   bottom: 0;
   margin-left: 3.2%;
   margin-bottom: 2.5%;
+}
+
+#verificationDiv {
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#verificationContainer {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 550px;
+  height: 500px;
+  padding: 30px;
+}
+
+#verificationContainer > input {
+  font-family: "montserrat";
+  font-size: 12px;
+  color: #000000;
+  border-color: #b3b3b3;
+  padding: 10px;
+  height: 140px;
+  width: 300px;
+  border-radius: 20px;
+  margin-top: 50px;
+}
+#verificationContainer > input:active {
+  border-color: black;
+  height: 150px;
+  width: 310px;
+}
+#verificationContainer > input:focus {
+  border-color: black;
+  height: 150px;
+  width: 310px;
+}
+#verificationContainer > input::placeholder {
+  text-align: center;
+}
+
+#verificationContainer > button {
+  margin-left: 150px;
+  margin-top: 40px;
+  font-family: "montserrat";
+  width: 200px;
+  height: 40px;
+  border-radius: 100px;
+  background-color: #000000;
+  color: white;
+  border: solid 2px rgb(255, 255, 255);
+}
+
+#verificationContainer > button:hover {
+  background-color: #005070;
+  color: white;
+}
+#verificationContainer > button:active {
+  width: 150px;
+  height: 30px;
+  font-size: 10px;
+  background-color: #002d3f;
+  color: white;
+}
+
+#verificationHeader{
+  border-bottom: 2px solid black;
+  border-radius: 100px;
 }

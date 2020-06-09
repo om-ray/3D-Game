@@ -1,9 +1,10 @@
 let express = require("express");
 let app = express();
 let serv = require("http").Server(app);
-const Sequelize = require("sequelize");
+let Sequelize = require("sequelize");
+let nodemailer = require("nodemailer");
 
-const db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
+let db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
   host: "localhost",
   port: "5432",
   dialect: "postgres",
@@ -21,9 +22,15 @@ let Accounts = db.define("Accounts", {
   Email: Sequelize.TEXT,
   Username: Sequelize.TEXT,
   Password: Sequelize.TEXT,
+  Code: Sequelize.INTEGER,
+  Verified: Sequelize.BOOLEAN,
+  Score: Sequelize.BIGINT,
+  MatchesWon: Sequelize.BIGINT,
+  Ties: Sequelize.BIGINT,
+  HP: Sequelize.BIGINT,
 });
 
-db.sync();
+db.sync(/*{ force: true }*/);
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/client/index.html");
@@ -65,6 +72,37 @@ let Player = function () {
   };
 };
 
+let sendVerificationCode = function (data) {
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "omihridesh",
+      pass: "aq123edsMI.changed",
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  let mailOptions = {
+    from: '"WAR" <omihridesh@gmail.com>',
+    to: data.Email,
+    subject: "WAR verification",
+    text: `Here is your verification code:\n ${data.Code.toString()}`,
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log("Message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+    res.render("contact", { msg: "Email has been sent" });
+  });
+};
+
 io.sockets.on("connection", function (socket) {
   console.log(
     socket.id + " joined the server on " + new Date().toLocaleString()
@@ -84,7 +122,7 @@ io.sockets.on("connection", function (socket) {
     Accounts.findOne({
       where: { Username: username, Password: password },
     }).then(function (accountExists) {
-      if (accountExists != null) {
+      if (accountExists != null && accountExists.dataValues.Verified == true) {
         socket.emit("log in successful");
       }
       if (accountExists == null) {
@@ -102,11 +140,26 @@ io.sockets.on("connection", function (socket) {
           Email: email,
           Username: username,
           Password: password,
+          Code: Math.floor(100000 + Math.random() * 900000),
+          Verified: false,
+          Score: 0,
+          MatchesWon: 0,
+          Ties: 0,
+          HP: 100,
         });
-        socket.emit("account created");
+        socket.emit("account created", email);
       }
       if (accountExists != null) {
         socket.emit("account exists");
+      }
+    });
+  });
+
+  socket.on("send verification code", function (data) {
+    Accounts.findOne({ where: { Email: data } }).then(function (accountExists) {
+      if (accountExists != null && accountExists.dataValues.Verified == false) {
+        sendVerificationCode(accountExists.dataValues);
+        socket.emit("Verification code sent");
       }
     });
   });

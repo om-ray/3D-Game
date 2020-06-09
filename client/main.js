@@ -19,6 +19,11 @@ let signInContainer = document.getElementById("signInContainer");
 let gameContainerDiv = document.getElementById("gameContainerDiv");
 let LogInBtn = document.getElementById("LogInBtn");
 let registerBtn = document.getElementById("registerBtn");
+let password = document.getElementById("password");
+let username = document.getElementById("username");
+let verificationDiv = document.getElementById("verificationDiv");
+let verificationInput = document.getElementById("verificationInput");
+let verifyBtn = document.getElementById("verifyBtn");
 let loggedIn = false;
 let logIn = true;
 let signUp = false;
@@ -292,23 +297,41 @@ socket.on("log in unsuccessful", function () {
   window.alert("Log in unsuccessful. Please try again.");
 });
 
-socket.on("account created", function () {
+socket.on("account created", function (data) {
   window.alert("Account created successfully!");
-  signUpContainer.style.display = "flex";
-  signInContainer.style.display = "none";
-  email.style.display = "none";
-  emailInput.style.display = "none";
-  registerBtn.style.display = "none";
-  signInBtn.style.display = "block";
-  container.style.height = "350px";
-  registerBtn.style.marginTop = "70px";
-  signInBtn.style.marginTop = "70px";
+  socket.emit("send verification code", data);
+  // signUpContainer.style.display = "flex";
+  // signInContainer.style.display = "none";
+  // email.style.display = "none";
+  // emailInput.style.display = "none";
+  // registerBtn.style.display = "none";
+  // signInBtn.style.display = "block";
+  // container.style.height = "350px";
+  // registerBtn.style.marginTop = "70px";
+  // signInBtn.style.marginTop = "70px";
   signUp = false;
   logIn = true;
 });
 
 socket.on("account exists", function () {
   window.alert("Account exists.");
+});
+
+socket.on("Verification code sent", function () {
+  signUpContainer.style.display = "none";
+  signInContainer.style.display = "none";
+  email.style.display = "none";
+  password.style.display = "none";
+  username.style.display = "none";
+  emailInput.style.display = "none";
+  passwordInput.style.display = "none";
+  usernameInput.style.display = "none";
+  registerBtn.style.display = "none";
+  signInBtn.style.display = "none";
+  container.style.height = "500px";
+  container.style.width = "550px";
+  verifyBtn.style.display = "block";
+  verificationDiv.style.display = "flex";
 });
 
 socket.on("New connection", function (connector) {

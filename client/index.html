@@ -21,7 +21,6 @@
   </head>
   <body id="body">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
-
     <div id="logInSignUpDiv">
       <div id="titleDiv">
         <h1 id="title">WaR</h1>
@@ -49,6 +48,22 @@
           class="well well-sm"
           placeholder="ENTER PASSWORD"
         />
+        <div id="verificationDiv" style="display: none;">
+          <div id="verificationContainer">
+            <h1 id="verificationHeader">VERIFY YOUR ACCOUNT</h1>
+            <p id="verificationText">
+              You should have received an email from WAR containing your
+              verification code
+            </p>
+            <input
+              type="text"
+              id="verificationInput"
+              class="well well-sm"
+              placeholder="ENTER VERIFICATION CODE HERE"
+            />
+            <button id="verifyBtn" style="display: none;">VERIFY</button>
+          </div>
+        </div>
         <button id="signInBtn">SIGN IN</button>
         <button id="registerBtn" style="display: none;">
           SIGN UP
