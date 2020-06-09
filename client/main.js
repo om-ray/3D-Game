@@ -49,7 +49,7 @@ let firstEnemy = new Enemy.Enemy();
 objects.enemies.push(firstEnemy);
 
 /* 
-Login system functions
+Auth system functions
 ::::::::START:::::::::
 !!!!!!!!!HERE!!!!!!!!!
 */
@@ -115,8 +115,17 @@ LogInBtn.onclick = function () {
   logIn = true;
 };
 
+verifyBtn.onclick = function () {
+  if (verificationInput.value != "") {
+    socket.emit("Verification Code", verificationInput.value, emailInput.value);
+  }
+  if (verificationInput.value == "") {
+    window.alert("Please complete all the fields.");
+  }
+};
+
 /* 
-Login system functions
+Auth system functions
 :::::::::END::::::::::
 !!!!!!!!!HERE!!!!!!!!!
 */
@@ -293,8 +302,47 @@ socket.on("log in successful", function () {
   socket.emit("my id", player.id, player.number);
 });
 
+socket.on("Please verify your account", function () {
+  window.alert("Please verify your account");
+  signUpContainer.style.display = "none";
+  signInContainer.style.display = "none";
+  email.style.display = "none";
+  password.style.display = "none";
+  username.style.display = "none";
+  emailInput.style.display = "none";
+  passwordInput.style.display = "none";
+  usernameInput.style.display = "none";
+  registerBtn.style.display = "none";
+  signInBtn.style.display = "none";
+  container.style.height = "500px";
+  container.style.width = "550px";
+  verifyBtn.style.display = "block";
+  verificationDiv.style.display = "flex";
+});
+
+socket.on("correct verification code", function () {
+  window.alert("Account verified successfully!");
+  signUpContainer.style.display = "flex";
+  signInContainer.style.display = "none";
+  email.style.display = "none";
+  emailInput.style.display = "none";
+  registerBtn.style.display = "none";
+  signInBtn.style.display = "block";
+  container.style.height = "350px";
+  registerBtn.style.marginTop = "70px";
+  signInBtn.style.marginTop = "70px";
+  verifyBtn.style.display = "none";
+  verificationDiv.style.display = "none";
+  signUp = false;
+  logIn = true;
+});
+
 socket.on("log in unsuccessful", function () {
   window.alert("Log in unsuccessful. Please try again.");
+});
+
+socket.on("wrong code", function () {
+  window.alert("Wrong verification code. Please try again.");
 });
 
 socket.on("account created", function (data) {

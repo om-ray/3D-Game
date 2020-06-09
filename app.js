@@ -2,6 +2,7 @@ let express = require("express");
 let app = express();
 let serv = require("http").Server(app);
 let Sequelize = require("sequelize");
+let Op = Sequelize.Op;
 let nodemailer = require("nodemailer");
 
 let db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
@@ -118,6 +119,20 @@ io.sockets.on("connection", function (socket) {
     socketList.push({ socketId: socket.id, id: id });
   });
 
+  socket.on("Verification Code", function (code, email) {
+    Accounts.findOne({
+      where: { Email: email, Code: code },
+    }).then(function (accountExists) {
+      if (accountExists != null) {
+        socket.emit("correct verification code");
+        Accounts.update({ Verified: true }, { where: { Email: email } });
+      }
+      if (accountExists == null) {
+        socket.emit("wrong code");
+      }
+    });
+  });
+
   socket.on("sign in attempt", function (username, password) {
     Accounts.findOne({
       where: { Username: username, Password: password },
@@ -128,13 +143,16 @@ io.sockets.on("connection", function (socket) {
       if (accountExists == null) {
         socket.emit("log in unsuccessful");
       }
+      if (accountExists != null && accountExists.dataValues.Verified == false) {
+        socket.emit("Please verify your account");
+      }
     });
   });
 
   socket.on("sign up attempt", function (email, username, password) {
-    Accounts.findOne({ where: { Email: email } }).then(function (
-      accountExists
-    ) {
+    Accounts.findOne({
+      where: { [Op.or]: [{ Email: email }, { Username: username }] },
+    }).then(function (accountExists) {
       if (accountExists == null) {
         Accounts.create({
           Email: email,
@@ -151,6 +169,12 @@ io.sockets.on("connection", function (socket) {
       }
       if (accountExists != null) {
         socket.emit("account exists");
+      }
+      if (
+        accountExists != null &&
+        accountExists.dataValues.Username == username
+      ) {
+        socket.emit("username taken");
       }
     });
   });
