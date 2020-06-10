@@ -69,6 +69,7 @@ registerBtn.onclick = function () {
     emailInput.value != "" &&
     usernameInput.value != "" &&
     passwordInput.value != "" &&
+    passwordInput.value.length > 8 &&
     signUp == true
   ) {
     socket.emit(
@@ -85,6 +86,10 @@ registerBtn.onclick = function () {
     passwordInput.value == ""
   ) {
     window.alert("Please complete all the fields.");
+  }
+
+  if (passwordInput.value.length <= 8) {
+    window.alert("Password length must be greater than 8 characters.");
   }
 };
 
@@ -494,7 +499,9 @@ socket.on("current time2", function (current_time) {
 });
 
 socket.on("match", function () {
-  window.alert("Match ended!");
+  if (loggedIn == true) {
+    window.alert("Match ended!");
+  }
 });
 
 /*
