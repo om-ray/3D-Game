@@ -493,6 +493,10 @@ socket.on("current time2", function (current_time) {
   counter_text.innerHTML = "Match starts in:";
 });
 
+socket.on("match", function () {
+  window.alert("Match ended!");
+});
+
 /*
 Socket.on's
 ::::END::::

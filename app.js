@@ -4,6 +4,7 @@ let serv = require("http").Server(app);
 let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
 let nodemailer = require("nodemailer");
+let bcrypt = require("bcrypt");
 
 let db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
   host: "localhost",
@@ -31,7 +32,7 @@ let Accounts = db.define("Accounts", {
   HP: Sequelize.BIGINT,
 });
 
-db.sync(/*{ force: true }*/);
+db.sync({ force: true });
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/client/index.html");
@@ -42,7 +43,6 @@ app.use("/dist", express.static(__dirname + "/dist"));
 app.use("/Assets", express.static(__dirname + "/client/Assets"));
 
 serv.listen(2000);
-console.log("server up");
 
 let current_minutes;
 let current_minutes2;
@@ -146,8 +146,6 @@ let sendVerificationCode = function (data) {
     if (error) {
       return console.log(error);
     }
-    console.log("Message sent: %s", info.messageId);
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 
     res.render("contact", { msg: "Email has been sent" });
   });
@@ -163,7 +161,6 @@ io.sockets.on("connection", function (socket) {
   socket.broadcast.emit("New connection", socket.id);
 
   socket.on("my id", function (id, number) {
-    console.log(`Player ${number}'s id: ${id}`);
     socket.broadcast.emit("New players id", id);
     socketList.push({ socketId: socket.id, id: id });
   });
@@ -184,13 +181,25 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("sign in attempt", function (username, password) {
     Accounts.findOne({
-      where: { Username: username, Password: password },
+      where: { Username: username },
     }).then(function (accountExists) {
       if (accountExists != null && accountExists.dataValues.Verified == true) {
-        socket.emit("log in successful");
+        bcrypt
+          .compare(password, accountExists.dataValues.Password)
+          .then(function (result) {
+            if (result == true) {
+              socket.emit("log in successful");
+            }
+          });
       }
       if (accountExists != null && accountExists.dataValues.Verified == false) {
-        socket.emit("Please verify your account");
+        bcrypt
+          .compare(password, accountExists.dataValues.Password)
+          .then(function (result) {
+            if (result == true) {
+              socket.emit("Please verify your account");
+            }
+          });
       }
       if (accountExists == null) {
         socket.emit("log in unsuccessful");
@@ -203,16 +212,18 @@ io.sockets.on("connection", function (socket) {
       where: { [Op.or]: [{ Email: email }, { Username: username }] },
     }).then(function (accountExists) {
       if (accountExists == null) {
-        Accounts.create({
-          Email: email,
-          Username: username,
-          Password: password,
-          Code: Math.floor(100000 + Math.random() * 900000),
-          Verified: false,
-          Score: 0,
-          MatchesWon: 0,
-          Ties: 0,
-          HP: 100,
+        bcrypt.hash(password, 10, function (err, hash) {
+          Accounts.create({
+            Email: email,
+            Username: username,
+            Password: hash,
+            Code: Math.floor(100000 + Math.random() * 900000),
+            Verified: false,
+            Score: 0,
+            MatchesWon: 0,
+            Ties: 0,
+            HP: 100,
+          });
         });
         socket.emit("account created", email);
       }
@@ -288,7 +299,7 @@ setInterval(() => {
     });
   }
   if (matchIsEnding == true) {
-    socket.emit("match");
+    io.emit("match");
     matchIsEnding = false;
     betweenMatches = true;
   }

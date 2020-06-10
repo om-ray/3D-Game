@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "express": "^4.17.1",
     "nodemailer": "^6.4.8",
     "pg": "^8.2.1",
