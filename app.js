@@ -32,7 +32,7 @@ let Accounts = db.define("Accounts", {
   HP: Sequelize.BIGINT,
 });
 
-db.sync({ force: true });
+db.sync();
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/client/index.html");
@@ -189,6 +189,9 @@ io.sockets.on("connection", function (socket) {
           .then(function (result) {
             if (result == true) {
               socket.emit("log in successful");
+            }
+            if (result != true) {
+              socket.emit("log in unsuccessful");
             }
           });
       }
