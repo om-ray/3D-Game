@@ -21,71 +21,91 @@
   </head>
   <body id="body">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
-    <div id="logInSignUpDiv">
-      <div id="titleDiv">
-        <h1 id="title">WaR</h1>
+    <div id="loadingScreen">
+      <div id="loadContainer">
+        <h1 id="loading">Loading...</h1>
+        <div id="loader"></div>
       </div>
-      <div id="container" class="well">
-        <p id="email" style="display: none;">EMAIL</p>
-        <input
-          type="email"
-          id="emailInput"
-          class="well well-sm"
-          placeholder="ENTER EMAIL"
-          style="display: none;"
-        />
-        <p id="username">USERNAME</p>
-        <input
-          type="text"
-          id="usernameInput"
-          class="well well-sm"
-          placeholder="ENTER USERNAME"
-        />
-        <p id="password">PASSWORD</p>
-        <input
-          type="password"
-          id="passwordInput"
-          class="well well-sm"
-          placeholder="ENTER PASSWORD"
-        />
-        <div id="verificationDiv" style="display: none;">
-          <div id="verificationContainer">
-            <h1 id="verificationHeader">VERIFY YOUR ACCOUNT</h1>
-            <p id="verificationText">
-              You should have received an email from WAR containing your
-              verification code
-            </p>
-            <input
-              type="text"
-              id="verificationInput"
-              class="well well-sm"
-              placeholder="ENTER VERIFICATION CODE HERE"
-            />
-            <button id="verifyBtn" style="display: none;">VERIFY</button>
+    </div>
+    <div id="notLoadingScreen">
+      <div id="logInSignUpDiv">
+        <div id="titleDiv">
+          <h1 id="title">WaR</h1>
+        </div>
+        <div id="container" class="well">
+          <p id="email" style="display: none;">EMAIL</p>
+          <input
+            type="email"
+            id="emailInput"
+            class="well well-sm"
+            placeholder="ENTER EMAIL"
+            style="display: none;"
+          />
+          <p id="username">USERNAME</p>
+          <input
+            type="text"
+            id="usernameInput"
+            class="well well-sm"
+            placeholder="ENTER USERNAME"
+          />
+          <p id="password">PASSWORD</p>
+          <input
+            type="password"
+            id="passwordInput"
+            class="well well-sm"
+            placeholder="ENTER PASSWORD"
+          />
+          <div id="verificationDiv" style="display: none;">
+            <div id="verificationContainer">
+              <h1 id="verificationHeader">VERIFY YOUR ACCOUNT</h1>
+              <p id="verificationText">
+                You should have received an email from WAR containing your
+                verification code
+              </p>
+              <p id="verifyUsername">USERNAME</p>
+              <input
+                type="text"
+                id="verifyUsernameInput"
+                class="well well-sm"
+                placeholder="ENTER USERNAME"
+              />
+              <p id="verificationCode">VERIFICATION CODE</p>
+              <input
+                type="text"
+                id="verificationInput"
+                class="well well-sm"
+                placeholder="ENTER VERIFICATION CODE HERE"
+              />
+              <button id="verifyBtn" style="display: none;">VERIFY</button>
+            </div>
+          </div>
+          <button id="signInBtn">SIGN IN</button>
+          <button id="registerBtn" style="display: none;">
+            SIGN UP
+          </button>
+        </div>
+        <div id="signUpDiv">
+          <div id="signUpContainer">
+            <p id="don'tHaveAccount">Don't have an account?</p>
+            <button id="signUpBtn">SIGN UP</button>
+          </div>
+          <div id="signInContainer" style="display: none;">
+            <p id="alreadyHaveAccount">Already have an account?</p>
+            <button id="LogInBtn">SIGN IN</button>
           </div>
         </div>
-        <button id="signInBtn">SIGN IN</button>
-        <button id="registerBtn" style="display: none;">
-          SIGN UP
-        </button>
       </div>
-      <div id="signUpDiv">
-        <div id="signUpContainer">
-          <p id="don'tHaveAccount">Don't have an account?</p>
-          <button id="signUpBtn">SIGN UP</button>
-        </div>
-        <div id="signInContainer" style="display: none;">
-          <p id="alreadyHaveAccount">Already have an account?</p>
-          <button id="LogInBtn">SIGN IN</button>
-        </div>
-      </div>
-    </div>
 
-    <div id="gameContainerDiv" style="display: none; position: absolute;">
-      <canvas id="score"></canvas>
-      <canvas id="ammo"></canvas>
-      <canvas id="mainGame"></canvas>
+      <div id="gameContainerDiv" style="display: none; position: absolute;">
+        <canvas id="score"></canvas>
+        <canvas id="ammo"></canvas>
+        <canvas id="mainGame"></canvas>
+        <div id="timerBox">
+          <h2 id="matchText"></h2>
+          <div id="timer" class="center"></div>
+        </div>
+      </div>
+      <script src="../dist/main.js"></script>
     </div>
-    <script src="../dist/main.js"></script>
   </body>
 </html>

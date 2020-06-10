@@ -219,3 +219,9 @@ export let drawDamageOverlay = function () {
   ctx.fillStyle = "rgba(255, 0, 0, 0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
+
+export let loadContent = function () {
+  document.getElementById("notLoadingScreen").style.opacity = "1";
+  document.getElementById("loadingScreen").style.opacity = "0";
+  document.getElementById("loadingScreen").style.display = "none";
+};

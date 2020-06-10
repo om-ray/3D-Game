@@ -24,6 +24,7 @@ let username = document.getElementById("username");
 let verificationDiv = document.getElementById("verificationDiv");
 let verificationInput = document.getElementById("verificationInput");
 let verifyBtn = document.getElementById("verifyBtn");
+let verifyUsernameInput = document.getElementById("verifyUsernameInput");
 let loggedIn = false;
 let logIn = true;
 let signUp = false;
@@ -36,8 +37,8 @@ let objects = {
 let player = new Player.Player(["w", "a", "s", "d"], "yes");
 objects.players.push(player);
 
+window.addEventListener("load", Draw.loadContent, Draw.resize);
 window.addEventListener("resize", Draw.resize, false);
-window.addEventListener("load", Draw.resize);
 
 let camera = Draw.sendCamera();
 let skyBBox = Draw.drawSkySphereAndGround();
@@ -116,10 +117,14 @@ LogInBtn.onclick = function () {
 };
 
 verifyBtn.onclick = function () {
-  if (verificationInput.value != "") {
-    socket.emit("Verification Code", verificationInput.value, emailInput.value);
+  if (verificationInput.value != "" || verifyUsernameInput.value != "") {
+    socket.emit(
+      "Verification Code",
+      verificationInput.value,
+      verifyUsernameInput.value
+    );
   }
-  if (verificationInput.value == "") {
+  if (verificationInput.value == "" || verifyUsernameInput.value == "") {
     window.alert("Please complete all the fields.");
   }
 };
@@ -320,6 +325,10 @@ socket.on("Please verify your account", function () {
   verificationDiv.style.display = "flex";
 });
 
+socket.on("username taken", function () {
+  window.alert("Username taken.");
+});
+
 socket.on("correct verification code", function () {
   window.alert("Account verified successfully!");
   signUpContainer.style.display = "flex";
@@ -329,10 +338,15 @@ socket.on("correct verification code", function () {
   registerBtn.style.display = "none";
   signInBtn.style.display = "block";
   container.style.height = "350px";
+  container.style.width = "250px";
   registerBtn.style.marginTop = "70px";
   signInBtn.style.marginTop = "70px";
   verifyBtn.style.display = "none";
   verificationDiv.style.display = "none";
+  password.style.display = "flex";
+  username.style.display = "flex";
+  passwordInput.style.display = "flex";
+  usernameInput.style.display = "flex";
   signUp = false;
   logIn = true;
 });
@@ -457,6 +471,26 @@ socket.on("You took damage", function () {
   setTimeout(() => {
     Draw.clearCanvas();
   }, 250);
+});
+
+socket.on("current time", function (current_time) {
+  let minutes = current_time.minutes;
+  let seconds = current_time.seconds;
+  let counter = document.getElementById("timer");
+  let counter_text = document.getElementById("matchText");
+
+  counter.innerHTML = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  counter_text.innerHTML = "Match ends in:";
+});
+
+socket.on("current time2", function (current_time) {
+  let minutes = current_time.minutes;
+  let seconds = current_time.seconds;
+  let counter = document.getElementById("timer");
+  let counter_text = document.getElementById("matchText");
+
+  counter.innerHTML = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  counter_text.innerHTML = "Match starts in:";
 });
 
 /*

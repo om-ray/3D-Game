@@ -1,11 +1,77 @@
 * {
   transition: ease-in-out 0.15s;
+  font-family: "montserrat";
 }
 
 body {
   position: relative;
   margin: 0;
   overflow: hidden;
+}
+
+#notLoadingScreen {
+  opacity: 0;
+  position: absolute;
+  transition-property: opacity;
+  transition-duration: 1s;
+}
+
+#loadingScreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  transition-property: opacity;
+  transition-duration: 1s;
+}
+
+#loadContainer {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+#loading {
+  text-align: center;
+  font-family: "montserrat";
+  padding: 10px;
+  width: 300px;
+  height: 60px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23333' stroke-width='3' stroke-dasharray='300%2c 100' stroke-dashoffset='100' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+
+#loader {
+  margin: auto;
+  border: 1px solid rgb(247, 247, 247);
+  border-radius: 50%;
+  border-top: 1px solid black;
+  width: 30px;
+  height: 30px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%23868686FF' stroke-width='2' stroke-dasharray='0%2c0' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+  border-radius: 100px;
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 canvas {
@@ -223,7 +289,7 @@ button:focus {
 
 #ammo {
   position: absolute;
-  border: rgb(187, 159, 0) 3px outset;
+  border: rgb(187, 159, 0) 2px outset;
   background-color: lightgray;
   background-image: url(Assets/Images/ammo.png);
   border-radius: 20px;
@@ -234,7 +300,7 @@ button:focus {
 #score {
   right: 0;
   position: absolute;
-  border: rgb(187, 159, 0) 3px outset;
+  border: rgb(187, 159, 0) 2px outset;
   background-color: lightgray;
   border-radius: 20px;
   opacity: 70%;
@@ -256,8 +322,7 @@ button:focus {
 }
 
 .healthContainer {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: "montserrat";
   position: absolute;
   display: flex;
   align-items: center;
@@ -313,7 +378,7 @@ button:focus {
   padding: 30px;
 }
 
-#verificationContainer > input {
+#verificationInput {
   font-family: "montserrat";
   font-size: 12px;
   color: #000000;
@@ -322,25 +387,48 @@ button:focus {
   height: 140px;
   width: 300px;
   border-radius: 20px;
-  margin-top: 50px;
 }
-#verificationContainer > input:active {
+
+#verificationInput:active {
   border-color: black;
   height: 150px;
   width: 310px;
 }
-#verificationContainer > input:focus {
+
+#verificationInput:focus {
   border-color: black;
   height: 150px;
   width: 310px;
 }
+
 #verificationContainer > input::placeholder {
   text-align: center;
 }
 
+#verifyUsernameInput {
+  font-family: "montserrat";
+  font-size: 12px;
+  color: #000000;
+  border-color: #b3b3b3;
+  padding: 10px;
+  height: 40px;
+  width: 300px;
+  border-radius: 20px;
+}
+
+#verifyUsernameInput:active {
+  height: 50px;
+  width: 310px;
+}
+
+#verifyUsernameInput:focus {
+  height: 50px;
+  width: 310px;
+}
+
 #verificationContainer > button {
   margin-left: 150px;
-  margin-top: 40px;
+  margin-top: 15px;
   font-family: "montserrat";
   width: 200px;
   height: 40px;
@@ -362,7 +450,45 @@ button:focus {
   color: white;
 }
 
-#verificationHeader{
+#verificationHeader {
   border-bottom: 2px solid black;
   border-radius: 100px;
+}
+
+#timerBox {
+  position: absolute;
+  width: 299px;
+  height: 172px;
+  background: rgba(68, 164, 219, 0.5);
+  border-radius: 52px 0px 0px 52px;
+  float: right;
+  /* display: none; */
+  border-left: 2px ridge #002d42;
+  border-top: 2px ridge #002d42;
+  border-bottom: 2px ridge #002d42;
+  top: 50vh;
+  right: 0;
+}
+
+#timer {
+  /* display: none; */
+  float: right;
+  font-family: "Cousine-regular";
+  font-size: xx-large;
+}
+
+#matchText {
+  font-family: "montserrat";
+  margin-right: 3vw;
+  margin-top: 5vh;
+  margin-left: 9vh;
+  font-size: 18px;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }

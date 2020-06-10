@@ -44,6 +44,55 @@ app.use("/Assets", express.static(__dirname + "/client/Assets"));
 serv.listen(2000);
 console.log("server up");
 
+let current_minutes;
+let current_minutes2;
+let current_seconds;
+let current_seconds2;
+let matchIsEnding = false;
+let betweenMatches = false;
+
+let countdown = function (seconds) {
+  seconds = seconds;
+
+  function tick() {
+    seconds--;
+    current_minutes = parseInt(seconds / 60);
+    current_seconds = seconds % 60;
+
+    if (seconds > 0) {
+      setTimeout(tick, 1000);
+    } else if (seconds <= 0) {
+      matchIsEnding = true;
+      between(60);
+    }
+  }
+  tick();
+};
+
+let between = function (seconds2) {
+  seconds2 = seconds2;
+
+  function tick2() {
+    seconds2--;
+    current_minutes2 = parseInt(seconds2 / 60);
+    current_seconds2 = seconds2 % 60;
+    if (seconds2 > 0) {
+      betweenMatches = true;
+      setTimeout(tick2, 1000);
+    } else if (seconds2 <= 0) {
+      betweenMatches = false;
+      reset();
+    }
+  }
+  tick2();
+};
+
+let reset = function () {
+  countdown(300);
+};
+
+countdown(300);
+
 let socketList = [];
 let playerList = [];
 
@@ -119,13 +168,13 @@ io.sockets.on("connection", function (socket) {
     socketList.push({ socketId: socket.id, id: id });
   });
 
-  socket.on("Verification Code", function (code, email) {
+  socket.on("Verification Code", function (code, username) {
     Accounts.findOne({
-      where: { Email: email, Code: code },
+      where: { Username: username, Code: code },
     }).then(function (accountExists) {
       if (accountExists != null) {
         socket.emit("correct verification code");
-        Accounts.update({ Verified: true }, { where: { Email: email } });
+        Accounts.update({ Verified: true }, { where: { Username: username } });
       }
       if (accountExists == null) {
         socket.emit("wrong code");
@@ -140,11 +189,11 @@ io.sockets.on("connection", function (socket) {
       if (accountExists != null && accountExists.dataValues.Verified == true) {
         socket.emit("log in successful");
       }
-      if (accountExists == null) {
-        socket.emit("log in unsuccessful");
-      }
       if (accountExists != null && accountExists.dataValues.Verified == false) {
         socket.emit("Please verify your account");
+      }
+      if (accountExists == null) {
+        socket.emit("log in unsuccessful");
       }
     });
   });
@@ -167,14 +216,14 @@ io.sockets.on("connection", function (socket) {
         });
         socket.emit("account created", email);
       }
-      if (accountExists != null) {
-        socket.emit("account exists");
-      }
       if (
         accountExists != null &&
         accountExists.dataValues.Username == username
       ) {
         socket.emit("username taken");
+      }
+      if (accountExists != null) {
+        socket.emit("account exists");
       }
     });
   });
@@ -224,3 +273,23 @@ io.sockets.on("connection", function (socket) {
     }
   });
 });
+
+setInterval(() => {
+  if (betweenMatches == false) {
+    io.emit("current time", {
+      minutes: current_minutes,
+      seconds: current_seconds,
+    });
+  }
+  if (betweenMatches == true) {
+    io.emit("current time2", {
+      minutes: current_minutes2,
+      seconds: current_seconds2,
+    });
+  }
+  if (matchIsEnding == true) {
+    socket.emit("match");
+    matchIsEnding = false;
+    betweenMatches = true;
+  }
+}, 10);
