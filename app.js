@@ -193,13 +193,7 @@ io.sockets.on("connection", function (socket) {
           });
       }
       if (accountExists != null && accountExists.dataValues.Verified == false) {
-        bcrypt
-          .compare(password, accountExists.dataValues.Password)
-          .then(function (result) {
-            if (result == true) {
-              socket.emit("Please verify your account");
-            }
-          });
+        socket.emit("Please verify your account");
       }
       if (accountExists == null) {
         socket.emit("log in unsuccessful");
