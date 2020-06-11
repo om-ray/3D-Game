@@ -36,7 +36,7 @@ body {
 
 #loading {
   text-align: center;
-  font-family: "montserrat";
+  font-family: "megrim";
   padding: 10px;
   width: 300px;
   height: 60px;
@@ -45,9 +45,9 @@ body {
 
 #loader {
   margin: auto;
-  border: 1px solid rgb(247, 247, 247);
+  border: 2px solid rgb(247, 247, 247);
   border-radius: 50%;
-  border-top: 1px solid black;
+  border-top: 2px solid rgb(0, 124, 173);
   width: 30px;
   height: 30px;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%23868686FF' stroke-width='2' stroke-dasharray='0%2c0' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
@@ -103,6 +103,15 @@ button:focus {
 #title {
   font-family: "megrim";
   font-size: 15vh;
+  letter-spacing: 10px;
+  color: #000000;
+}
+
+#small {
+  color: #000000;
+  letter-spacing: 0px;
+  font-family: "megrim";
+  font-weight: 500;
 }
 
 #logInSignUpDiv {
