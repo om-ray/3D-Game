@@ -49,7 +49,6 @@ Draw.drawSkySphereAndGround();
 let firstEnemy = new Enemy.Enemy();
 objects.enemies.push(firstEnemy);
 
-
 /* 
 Auth system functions
 ::::::::START:::::::::
@@ -531,11 +530,10 @@ let animate = function () {
   //enemyLogicRunner();
   gameLoop();
   Draw.render();
+  requestAnimationFrame(animate);
 };
 
-setInterval(() => {
-  animate();
-}, 10);
+animate();
 
 /*
 Games main functions
