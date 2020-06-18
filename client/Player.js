@@ -26,6 +26,7 @@ var material = new THREE.MeshBasicMaterial({
 var container = document.getElementById("gameContainerDiv");
 
 export var Player = function (keycodes, priority) {
+  this.username
   this.number = Math.floor(Math.random() * 10000);
   this.type = "Player";
   this.id = Math.floor(1000 + Math.random() * 9000);

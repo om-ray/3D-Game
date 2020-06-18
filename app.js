@@ -26,13 +26,20 @@ let Accounts = db.define("Accounts", {
   Password: Sequelize.TEXT,
   Code: Sequelize.INTEGER,
   Verified: Sequelize.BOOLEAN,
+  LoggedIn: Sequelize.BOOLEAN,
   Score: Sequelize.BIGINT,
   MatchesWon: Sequelize.BIGINT,
   Ties: Sequelize.BIGINT,
   HP: Sequelize.BIGINT,
+  X: Sequelize.FLOAT,
+  Y: Sequelize.FLOAT,
+  Z: Sequelize.FLOAT,
+  RotationY: Sequelize.FLOAT,
+  AmmoLeft: Sequelize.BIGINT,
 });
 
 db.sync();
+// db.sync({ force: true });
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/client/index.html");
@@ -43,13 +50,16 @@ app.use("/dist", express.static(__dirname + "/dist"));
 app.use("/Assets", express.static(__dirname + "/client/Assets"));
 
 serv.listen(2000);
+Accounts.update({ LoggedIn: false }, { where: { LoggedIn: true } });
 
 let current_minutes;
 let current_minutes2;
 let current_seconds;
 let current_seconds2;
+let matchIsStarting = false;
 let matchIsEnding = false;
 let betweenMatches = false;
+let duration = 300;
 
 let countdown = function (seconds) {
   seconds = seconds;
@@ -63,7 +73,7 @@ let countdown = function (seconds) {
       setTimeout(tick, 1000);
     } else if (seconds <= 0) {
       matchIsEnding = true;
-      between(60);
+      between(10);
     }
   }
   tick();
@@ -77,21 +87,26 @@ let between = function (seconds2) {
     current_minutes2 = parseInt(seconds2 / 60);
     current_seconds2 = seconds2 % 60;
     if (seconds2 > 0) {
+      matchIsStarting = false;
       betweenMatches = true;
       setTimeout(tick2, 1000);
     } else if (seconds2 <= 0) {
       betweenMatches = false;
       reset();
+      matchIsStarting = true;
+      setTimeout(function () {
+        matchIsStarting = false;
+      }, 10);
     }
   }
   tick2();
 };
 
 let reset = function () {
-  countdown(300);
+  countdown(duration);
 };
 
-countdown(300);
+countdown(duration);
 
 let socketList = [];
 let playerList = [];
@@ -156,12 +171,13 @@ io.sockets.on("connection", function (socket) {
     socket.id + " joined the server on " + new Date().toLocaleString()
   );
   let player = new Player();
-  playerList.push({ player: player, id: socket.id });
+  playerList.push({ player: player, id: socket.id, username: null, score: 0 });
 
   socket.broadcast.emit("New connection", socket.id);
 
-  socket.on("my id", function (id, number) {
+  socket.on("my id", function (id, number, username) {
     socket.broadcast.emit("New players id", id);
+    Accounts.update({ LoggedIn: true }, { where: { Username: username } });
     socketList.push({ socketId: socket.id, id: id });
   });
 
@@ -183,12 +199,21 @@ io.sockets.on("connection", function (socket) {
     Accounts.findOne({
       where: { Username: username },
     }).then(function (accountExists) {
-      if (accountExists != null && accountExists.dataValues.Verified == true) {
+      if (
+        accountExists != null &&
+        accountExists.dataValues.Verified == true &&
+        accountExists.dataValues.LoggedIn == false
+      ) {
         bcrypt
           .compare(password, accountExists.dataValues.Password)
           .then(function (result) {
             if (result == true) {
               socket.emit("log in successful");
+              for (let i in playerList) {
+                if (playerList[i].id == socket.id) {
+                  playerList[i].username = username;
+                }
+              }
             }
             if (result != true) {
               socket.emit("log in unsuccessful");
@@ -197,6 +222,9 @@ io.sockets.on("connection", function (socket) {
       }
       if (accountExists != null && accountExists.dataValues.Verified == false) {
         socket.emit("Please verify your account");
+      }
+      if (accountExists != null && accountExists.dataValues.LoggedIn == true) {
+        socket.emit("only one session at once");
       }
       if (accountExists == null) {
         socket.emit("log in unsuccessful");
@@ -216,6 +244,7 @@ io.sockets.on("connection", function (socket) {
             Password: hash,
             Code: Math.floor(100000 + Math.random() * 900000),
             Verified: false,
+            LoggedIn: false,
             Score: 0,
             MatchesWon: 0,
             Ties: 0,
@@ -245,8 +274,27 @@ io.sockets.on("connection", function (socket) {
     });
   });
 
+  socket.on("score went up", function (score, username) {
+    Accounts.update({ Score: score }, { where: { Username: username } });
+  });
+
+  socket.on("health", function (health, username) {
+    Accounts.update({ HP: health }, { where: { Username: username } });
+  });
+
   socket.on("Player info", function (playerinfo) {
+    Accounts.update(
+      {
+        X: playerinfo.x,
+        Y: playerinfo.y,
+        Z: playerinfo.z,
+        RotationY: playerinfo.rotation,
+        AmmoLeft: playerinfo.ammoLeft,
+      },
+      { where: { Username: playerinfo.username } }
+    );
     socket.broadcast.emit("updated player info", playerinfo);
+    // for(let i in )
   });
 
   socket.on("Player health", function (playerHealth) {
@@ -255,6 +303,25 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("me", function (them) {
     io.to(them.connector).emit("add them", them.player);
+  });
+
+  socket.on("please send old data", function (username) {
+    Accounts.findOne({ where: { Username: username } }).then(function (
+      accountExists
+    ) {
+      if (accountExists != null) {
+        socket.emit(
+          "old data",
+          accountExists.dataValues.X,
+          accountExists.dataValues.Y,
+          accountExists.dataValues.Z,
+          accountExists.dataValues.RotationY,
+          accountExists.dataValues.AmmoLeft,
+          accountExists.dataValues.HP,
+          accountExists.dataValues.Score
+        );
+      }
+    });
   });
 
   socket.on("bullet position", function (bulletInfo) {
@@ -271,6 +338,15 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on("disconnect", function () {
+    for (let i in playerList) {
+      if (playerList[i].id == socket.id) {
+        Accounts.update(
+          { LoggedIn: false },
+          { where: { Username: playerList[i].username } }
+        );
+        console.log("logged them out");
+      }
+    }
     console.log(
       socket.id + " left the server on " + new Date().toLocaleString()
     );
@@ -283,6 +359,9 @@ io.sockets.on("connection", function (socket) {
 });
 
 setInterval(() => {
+  if (matchIsStarting == true) {
+    io.emit("Match starting");
+  }
   if (betweenMatches == false) {
     io.emit("current time", {
       minutes: current_minutes,

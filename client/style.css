@@ -1,12 +1,29 @@
 * {
   transition: ease-in-out 0.15s;
   font-family: "montserrat";
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-user-select: none;
 }
 
 body {
   position: relative;
   margin: 0;
   overflow: hidden;
+}
+
+#cursor {
+  position: absolute;
+  background-image: url(../client/Assets/Images/gunCursor.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100px;
+  height: 100px;
+  z-index: 100;
+  pointer-events: none;
+  transition: none;
+  transform: translate(-75%, -50%);
 }
 
 #notLoadingScreen {
@@ -16,16 +33,24 @@ body {
   transition-duration: 1s;
 }
 
+#logInSignUpDiv *:hover {
+  cursor: none;
+}
+
 #loadingScreen {
+  cursor: auto;
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  width: 100vw;
   transition-property: opacity;
   transition-duration: 1s;
 }
 
 #loadContainer {
+  cursor: auto;
   margin: 0;
   position: absolute;
   top: 50%;
@@ -38,8 +63,8 @@ body {
   text-align: center;
   font-family: "megrim";
   padding: 10px;
-  width: 300px;
-  height: 60px;
+  width: 350px;
+  height: 70px;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23333' stroke-width='3' stroke-dasharray='300%2c 100' stroke-dashoffset='100' stroke-linecap='square'/%3e%3c/svg%3e");
 }
 
@@ -50,6 +75,7 @@ body {
   border-top: 2px solid rgb(0, 124, 173);
   width: 30px;
   height: 30px;
+  margin-top: 20px;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%23868686FF' stroke-width='2' stroke-dasharray='0%2c0' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
   border-radius: 100px;
   -webkit-animation: spin 1s linear infinite;
@@ -110,7 +136,8 @@ button:focus {
 .dots-cont {
   position: absolute;
   font-family: "megrim";
-  left: 30px;
+  left: 40px;
+  top: 38px;
 }
 
 .dot {
@@ -119,7 +146,7 @@ button:focus {
 
 .dots-cont > .dot {
   position: relative;
-  bottom: 10px;
+  top: 11px;
   animation-name: jump;
   animation-duration: 0.3s;
   animation-iteration-count: infinite;
@@ -128,16 +155,16 @@ button:focus {
 }
 
 .dots-cont .dot-1 {
-  -webkit-animation-delay: none;
-  animation-delay: none;
-}
-.dots-cont .dot-2 {
-  -webkit-animation-delay: 0.1s;
-  animation-delay: 0.1s;
-}
-.dots-cont .dot-3 {
   -webkit-animation-delay: 0.2s;
   animation-delay: 0.2s;
+}
+.dots-cont .dot-2 {
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s;
+}
+.dots-cont .dot-3 {
+  -webkit-animation-delay: 0.4s;
+  animation-delay: 0.4s;
 }
 
 @keyframes jump {
@@ -282,7 +309,14 @@ button:focus {
 }
 
 #container > button:hover {
+  border: solid 2px #000000;
   background-color: #005070;
+  color: white;
+}
+
+#container > button:focus {
+  background-color: #005070;
+  border: solid 2px #000000;
   color: white;
 }
 
@@ -315,11 +349,26 @@ button:focus {
 }
 
 #signUpContainer > button:hover {
+  border: solid 2px #000000;
+  background-color: #005070;
+  color: white;
+}
+
+#signUpContainer > button:focus {
+  border: solid 2px #000000;
   background-color: #005070;
   color: white;
 }
 
 #signInContainer > button:hover {
+  border: solid 2px #000000;
+
+  background-color: #005070;
+  color: white;
+}
+
+#signInContainer > button:focus {
+  border: solid 2px #000000;
   background-color: #005070;
   color: white;
 }
@@ -341,6 +390,7 @@ button:focus {
 }
 
 #gameContainerDiv {
+  cursor: auto;
   position: absolute;
   width: 100vw;
   height: 100vh;
@@ -499,9 +549,17 @@ button:focus {
 }
 
 #verificationContainer > button:hover {
+  border: solid 2px #000000;
   background-color: #005070;
   color: white;
 }
+
+#verificationContainer > button:focus {
+  border: solid 2px #000000;
+  background-color: #005070;
+  color: white;
+}
+
 #verificationContainer > button:active {
   width: 150px;
   height: 30px;
@@ -520,6 +578,7 @@ button:focus {
   width: 299px;
   height: 172px;
   background: rgba(68, 164, 219, 0.5);
+  backdrop-filter: hue-rotate(70deg);
   border-radius: 52px 0px 0px 52px;
   float: right;
   /* display: none; */

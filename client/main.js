@@ -25,6 +25,13 @@ let verificationDiv = document.getElementById("verificationDiv");
 let verificationInput = document.getElementById("verificationInput");
 let verifyBtn = document.getElementById("verifyBtn");
 let verifyUsernameInput = document.getElementById("verifyUsernameInput");
+let matchDoneModal = document.getElementById("matchDoneModal");
+let matchOkBtn = document.getElementById("matchOkBtn");
+let matchCloseBtn = document.getElementById("matchCloseBtn");
+let me = document.getElementById("me");
+let myScore = document.getElementById("myScore");
+let cursor = document.getElementById("cursor");
+let previousDataAssigned = false;
 let loggedIn = false;
 let logIn = true;
 let signUp = false;
@@ -50,10 +57,36 @@ let firstEnemy = new Enemy.Enemy();
 objects.enemies.push(firstEnemy);
 
 /* 
-Auth system functions
-::::::::START:::::::::
-!!!!!!!!!HERE!!!!!!!!!
+Event listener functions
+:::::::::START::::::::::
+!!!!!!!!!!HERE!!!!!!!!!!
 */
+
+document.addEventListener("mousemove", function (e) {
+  cursor.style.left = e.pageX + "px";
+  cursor.style.top = e.pageY + "px";
+});
+
+document.addEventListener("mousedown", function (e) {
+  cursor.style.backgroundImage =
+    "url(../client/Assets/Images/gunCursorShooting.png)";
+  cursor.style.left = e.pageX + "px";
+  cursor.style.top = e.pageY + "px";
+  cursor.style.backgroundSize = "contain";
+  cursor.style.transform = "translate(-30%, -50%)";
+  // cursor.style.width = 100 + "px";
+  // cursor.style.height = 100 + "px";
+});
+
+document.addEventListener("mouseup", function (e) {
+  cursor.style.backgroundImage = "url(../client/Assets/Images/gunCursor.png)";
+  cursor.style.left = e.pageX + "px";
+  cursor.style.top = e.pageY + "px";
+  cursor.style.backgroundSize = "cover";
+  cursor.style.transform = "translate(-75%, -50%)";
+  // cursor.style.width = 50 + "px";
+  // cursor.style.height = 50 + "px";
+});
 
 signInBtn.onclick = function () {
   if (usernameInput.value != "" && passwordInput.value != "" && logIn == true) {
@@ -134,10 +167,18 @@ verifyBtn.onclick = function () {
   }
 };
 
+matchOkBtn.onclick = function () {
+  matchDoneModal.style.display = "none";
+};
+
+matchCloseBtn.onclick = function () {
+  matchDoneModal.style.display = "none";
+};
+
 /* 
-Auth system functions
-:::::::::END::::::::::
-!!!!!!!!!HERE!!!!!!!!!
+Event listener functions
+::::::::::END:::::::::::
+!!!!!!!!!!HERE!!!!!!!!!!
 */
 //---NO MAN'S LAND---//
 /* 
@@ -147,6 +188,7 @@ Logic runner functions
 */
 
 let pvpChecker = function () {
+  socket.emit("health", player.health, player.username);
   for (let i in objects.players) {
     for (let u in objects.players[i].bulletList) {
       if (
@@ -163,6 +205,7 @@ let pvpChecker = function () {
           if (objects.players[i].health <= 0) {
             objects.players[i].respawn();
             player.score += 1;
+            socket.emit("score went up", player.score, player.username);
           }
           socket.emit("you took damage", objects.players[i].id);
           for (let n in player.bulletList) {
@@ -186,8 +229,12 @@ let sendPlayerInfo = function () {
     y: player.mesh.position.y,
     z: player.mesh.position.z,
     rotation: player.mesh.rotation.y,
-    bulletList: player.bulletList.length,
+    ammoLeft: player.ammoList.length,
+    score: player.score,
+    username: player.username,
   });
+
+  socket.emit("log in state", loggedIn);
 };
 
 let sendBulletInfo = function () {
@@ -306,10 +353,14 @@ Socket.on's
 */
 
 socket.on("log in successful", function () {
+  if (previousDataAssigned == false) {
+    socket.emit("please send old data", usernameInput.value);
+  }
   loggedIn = true;
   logInSignUpDiv.style.display = "none";
   gameContainerDiv.style.display = "inline-block";
-  socket.emit("my id", player.id, player.number);
+  player.username = usernameInput.value;
+  socket.emit("my id", player.id, player.number, player.username);
 });
 
 socket.on("Please verify your account", function () {
@@ -358,6 +409,12 @@ socket.on("correct verification code", function () {
 
 socket.on("log in unsuccessful", function () {
   window.alert("Log in unsuccessful. Please try again.");
+});
+
+socket.on("only one session at once", function () {
+  window.alert(
+    "Only ONE session at once. Please close all other instances of the game."
+  );
 });
 
 socket.on("wrong code", function () {
@@ -500,8 +557,47 @@ socket.on("current time2", function (current_time) {
 
 socket.on("match", function () {
   if (loggedIn == true) {
-    window.alert("Match ended!");
+    Draw.drawMessage("Match over!");
+    setTimeout(() => {
+      Draw.clearCanvas();
+    }, 1000);
+    setTimeout(() => {
+      // matchDoneModal.style.display = "flex";
+      me.innerHTML = usernameInput.value;
+      myScore.innerHTML = player.score;
+    }, 2000);
+    player.score = 0;
+    player.health = 100;
+    player.ammoList = [];
+    player.bulletList = [];
   }
+});
+
+socket.on("old data", function (x, y, z, rotY, ammoLeft, health, score) {
+  player.mesh.position.x = x;
+  player.mesh.position.y = y;
+  player.mesh.position.z = z;
+  player.mesh.rotation.y = rotY;
+  player.ammoList.length = ammoLeft;
+  player.health = health;
+  player.score = score;
+  previousDataAssigned = true;
+});
+
+socket.on("send username", function () {
+  socket.emit("my username", player.username);
+});
+
+socket.on("Match starting", function () {
+  Draw.drawMessage("Match starting!");
+  setTimeout(function () {
+    Draw.clearCanvas();
+  }, 1000);
+  player.respawn();
+  player.score = 0;
+  player.health = 100;
+  player.ammoList = [];
+  player.bulletList = [];
 });
 
 /*
@@ -517,7 +613,7 @@ Games main functions
 */
 
 let gameLoop = function () {
-  if (loggedIn) {
+  if (loggedIn && previousDataAssigned) {
     sendPlayerInfo();
     basicGameLogicRunner();
     pvpChecker();

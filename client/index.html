@@ -10,6 +10,10 @@
       rel="stylesheet"
     />
     <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Megrim&display=swap"
       rel="stylesheet"
     />
@@ -25,13 +29,13 @@
       <div id="loadContainer">
         <h1 id="loading">
           <span class="dots-cont">
-            <span class="dot dot-3">.</span>
-            <span class="dot dot-2">.</span>
-            <span class="dot dot-1">.</span>
+            <span class="dot dot-3">°</span>
+            <span class="dot dot-2">°</span>
+            <span class="dot dot-1">°</span>
             LOADING
-            <span class="dot dot-1">.</span>
-            <span class="dot dot-2">.</span>
-            <span class="dot dot-3">.</span>
+            <span class="dot dot-1">°</span>
+            <span class="dot dot-2">°</span>
+            <span class="dot dot-3">°</span>
           </span>
         </h1>
         <div id="loader"></div>
@@ -39,6 +43,7 @@
     </div>
     <div id="notLoadingScreen">
       <div id="logInSignUpDiv">
+        <div id="cursor"></div>
         <div id="titleDiv">
           <h1 id="title">E<small id="small">&#62;&#60;</small>O</h1>
         </div>
@@ -107,6 +112,39 @@
       </div>
 
       <div id="gameContainerDiv" style="display: none; position: absolute;">
+        <div class="modal" id="matchDoneModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button id="matchCloseBtn" class="close">&times;</button>
+                <h4 class="modal-title">MATCH DONE</h4>
+              </div>
+              <div class="modal-body">
+                <table id="scoreTable" class="table table-hover table-dark">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Username</th>
+                      <th scope="col">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">1</th>
+                      <td id="me"></td>
+                      <td id="myScore">Otto</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="matchOkBtn">
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <canvas id="score"></canvas>
         <canvas id="ammo"></canvas>
         <canvas id="mainGame"></canvas>

@@ -3,6 +3,7 @@ let Draw = require("./Draw");
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
 let gameContainerDiv = document.getElementById("gameContainerDiv");
 // let socket = io();
+let cursor = document.getElementById("cursor");
 let camera = Draw.sendCamera();
 let state = {
   locked: false,
@@ -11,6 +12,8 @@ let state = {
 let controls = new PointerLockControls(camera, document.body);
 
 gameContainerDiv.addEventListener("click", function () {
+  cursor.style.left = 50 + "vw";
+  cursor.style.top = 50 + "vh";
   controls.lock();
   state.locked = true;
 });

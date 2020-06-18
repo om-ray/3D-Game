@@ -10,8 +10,8 @@ let ammoctx = ammocanvas.getContext("2d");
 let scorecanvas = document.getElementById("score");
 let scorectx = scorecanvas.getContext("2d");
 let gameContainerDiv = document.getElementById("gameContainerDiv");
-let width = "100vw";
-let height = "100vh";
+let width = document.getElementById("body").clientWidth;
+let height = document.getElementById("body").clientHeight;
 canvas.width = width;
 canvas.height = height;
 ammocanvas.width = 100;
@@ -120,10 +120,6 @@ export let drawMesh = function (mesh) {
   scene.add(mesh);
 };
 
-export let drawMessage = function (message) {
-  ctx.fillText(message, canvas.width / 2, canvas.height / 2);
-};
-
 export let removeMesh = function (mesh) {
   scene.remove(mesh);
 };
@@ -188,9 +184,14 @@ export let setCanvasStyling = function () {
   ammoctx.textAlign = "center";
   ammoctx.textBaseline = "middle";
   ctx.fillStyle = "red";
-  ctx.font = "30px Cousine-regular";
+  ctx.font = "3vw orbitron";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+};
+
+export let drawMessage = function (message) {
+  clearCanvas();
+  ctx.fillText(message.toUpperCase(), canvas.width / 2, canvas.height / 6);
 };
 
 export let drawAmmo = function (ammo) {
