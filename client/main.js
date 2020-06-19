@@ -30,11 +30,17 @@ let matchOkBtn = document.getElementById("matchOkBtn");
 let matchCloseBtn = document.getElementById("matchCloseBtn");
 let me = document.getElementById("me");
 let myScore = document.getElementById("myScore");
+let scoreTable = document.getElementById("scoreTable");
+let leaderboardBody = document.getElementById("leaderboardBody");
 let cursor = document.getElementById("cursor");
 let previousDataAssigned = false;
 let loggedIn = false;
 let logIn = true;
 let signUp = false;
+let unfilteredUsernamesArr = [];
+let unfilteredScoresArr = [];
+let usernamesArr = [];
+let scoresArr = [];
 
 let objects = {
   enemies: [],
@@ -186,6 +192,30 @@ Logic runner functions
 ::::::::START:::::::::
 !!!!!!!!!HERE!!!!!!!!!
 */
+
+let leaderboardLogic = function () {
+  socket.emit("leaderboard scores");
+};
+
+let removeDuplicates = function (arr) {
+  return arr.filter((value, index) => arr.indexOf(value) === index);
+};
+
+let addToLeaderboard = function (username, score) {
+  let table_row = document.createElement("TR");
+  let table_data_header = document.createElement("TH");
+  let table_data_score = document.createElement("TD");
+  let table_data_username = document.createElement("TD");
+  let scoreNode = document.createTextNode(score);
+  let usernameNode = document.createTextNode(username);
+  leaderboardBody.appendChild(table_row);
+  table_data_score.appendChild(scoreNode);
+  table_data_username.appendChild(usernameNode);
+  table_row.appendChild(table_data_header);
+  table_row.appendChild(table_data_score);
+  table_row.appendChild(table_data_username);
+  console.log(leaderboardBody.childElementCount);
+};
 
 let pvpChecker = function () {
   socket.emit("health", player.health, player.username);
@@ -562,9 +592,7 @@ socket.on("match", function () {
       Draw.clearCanvas();
     }, 1000);
     setTimeout(() => {
-      // matchDoneModal.style.display = "flex";
-      me.innerHTML = usernameInput.value;
-      myScore.innerHTML = player.score;
+      matchDoneModal.style.display = "flex";
     }, 2000);
     player.score = 0;
     player.health = 100;
@@ -600,6 +628,22 @@ socket.on("Match starting", function () {
   player.bulletList = [];
 });
 
+socket.on("leaderboard scores", function (scores) {
+  for (let i in scores) {
+    unfilteredUsernamesArr.push(scores[i].username);
+    unfilteredScoresArr.push(scores[i].score);
+  }
+  usernamesArr = removeDuplicates(unfilteredUsernamesArr);
+  scoresArr = removeDuplicates(unfilteredScoresArr);
+  for (let i in usernamesArr) {
+    if (leaderboardBody.childElementCount <= usernamesArr.length - 1) {
+      addToLeaderboard(usernamesArr[i], scoresArr[i]);
+    } // else {
+    // leaderboardBody.innerHTML = "";
+    // }
+  }
+});
+
 /*
 Socket.on's
 ::::END::::
@@ -613,6 +657,8 @@ Games main functions
 */
 
 let gameLoop = function () {
+  leaderboardLogic();
+
   if (loggedIn && previousDataAssigned) {
     sendPlayerInfo();
     basicGameLogicRunner();

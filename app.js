@@ -52,6 +52,7 @@ app.use("/Assets", express.static(__dirname + "/client/Assets"));
 serv.listen(2000);
 Accounts.update({ LoggedIn: false }, { where: { LoggedIn: true } });
 
+let scoreArray = [];
 let current_minutes;
 let current_minutes2;
 let current_seconds;
@@ -59,7 +60,7 @@ let current_seconds2;
 let matchIsStarting = false;
 let matchIsEnding = false;
 let betweenMatches = false;
-let duration = 300;
+let duration = 30;
 
 let countdown = function (seconds) {
   seconds = seconds;
@@ -104,6 +105,14 @@ let between = function (seconds2) {
 
 let reset = function () {
   countdown(duration);
+};
+
+let removeDupes = function (arr, key) {
+  scoreArray = [...new Map(arr.map((item) => [item[key], item])).values()];
+};
+
+let sortArray = function () {
+  scoreArray.sort((a, b) => b.score - a.score);
 };
 
 countdown(duration);
@@ -337,6 +346,24 @@ io.sockets.on("connection", function (socket) {
     }
   });
 
+  socket.on("leaderboard scores", function () {
+    Accounts.findAll({ where: { Verified: true } }).then(function (
+      accountExists
+    ) {
+      if (accountExists != null) {
+        for (let i in accountExists) {
+          scoreArray.push({
+            score: accountExists[i].dataValues.Score,
+            username: accountExists[i].dataValues.Username,
+          });
+          removeDupes(scoreArray, "username");
+          sortArray();
+          console.log(scoreArray);
+        }
+      }
+    });
+  });
+
   socket.on("disconnect", function () {
     for (let i in playerList) {
       if (playerList[i].id == socket.id) {
@@ -359,6 +386,8 @@ io.sockets.on("connection", function (socket) {
 });
 
 setInterval(() => {
+  io.emit("leaderboard scores", scoreArray);
+
   if (matchIsStarting == true) {
     io.emit("Match starting");
   }
