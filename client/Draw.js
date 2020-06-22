@@ -189,9 +189,14 @@ export let setCanvasStyling = function () {
   ctx.textBaseline = "middle";
 };
 
-export let drawMessage = function (message) {
+export let drawMessage = function (message, position) {
   clearCanvas();
-  ctx.fillText(message.toUpperCase(), canvas.width / 2, canvas.height / 6);
+  if (position == "top" || position == null) {
+    ctx.fillText(message.toUpperCase(), canvas.width / 2, canvas.height / 6);
+  }
+  if (position == "center") {
+    ctx.fillText(message.toUpperCase(), canvas.width / 2, canvas.height / 2);
+  }
 };
 
 export let drawAmmo = function (ammo) {

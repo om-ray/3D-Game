@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="/Assets/Images/favicon_io/apple-touch-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Megrim&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../client/admin.css" />
+    <title>Admin panel</title>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+    <div id="container">
+      <div id="title">
+        <h1 id="titleText">
+          <button id="refresh">Refresh</button>
+          Admin Panel
+        </h1>
+      </div>
+      <div id="table">
+        <table id="adminTable" class="table tablehover table-dark">
+          <thead>
+            <tr>
+              <th scope="col" id="username">Username</th>
+              <th scope="col">|</th>
+              <th scope="col" id="currentHealth">Current Health</th>
+              <th scope="col">|</th>
+              <th scope="col" id="matchesWon">Matches Won</th>
+              <th scope="col">|</th>
+              <th scope="col" id="ip">IP</th>
+              <th scope="col">|</th>
+              <th scope="col" id="location">Location</th>
+            </tr>
+          </thead>
+          <tbody id="playerTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <script src="../client/admin.js"></script>
+  </body>
+</html>

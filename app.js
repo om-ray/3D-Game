@@ -5,6 +5,8 @@ let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
 let nodemailer = require("nodemailer");
 let bcrypt = require("bcrypt");
+let fetch = require("node-fetch");
+const { where } = require("sequelize");
 
 let db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
   host: "localhost",
@@ -30,6 +32,8 @@ let Accounts = db.define("Accounts", {
   Score: Sequelize.BIGINT,
   MatchesWon: Sequelize.BIGINT,
   Ties: Sequelize.BIGINT,
+  IP: Sequelize.INET,
+  Location: Sequelize.TEXT,
   HP: Sequelize.BIGINT,
   X: Sequelize.FLOAT,
   Y: Sequelize.FLOAT,
@@ -43,6 +47,10 @@ db.sync();
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/client/index.html");
+});
+
+app.get("/admin", function (req, res) {
+  res.sendFile(__dirname + "/client/admin.html");
 });
 
 app.use("/client", express.static(__dirname + "/client"));
@@ -60,7 +68,7 @@ let current_seconds2;
 let matchIsStarting = false;
 let matchIsEnding = false;
 let betweenMatches = false;
-let duration = 30;
+let duration = 20;
 
 let countdown = function (seconds) {
   seconds = seconds;
@@ -182,7 +190,15 @@ io.sockets.on("connection", function (socket) {
   let player = new Player();
   playerList.push({ player: player, id: socket.id, username: null, score: 0 });
 
-  socket.broadcast.emit("New connection", socket.id);
+  socket.on("Admin data", function () {
+    Accounts.findAll({}).then(function (Accounts) {
+        socket.emit("your admin data", Accounts);
+    });
+  });
+
+  socket.on("i wish to exist", function () {
+    socket.broadcast.emit("New connection", socket.id);
+  });
 
   socket.on("my id", function (id, number, username) {
     socket.broadcast.emit("New players id", id);
@@ -294,6 +310,7 @@ io.sockets.on("connection", function (socket) {
   socket.on("Player info", function (playerinfo) {
     Accounts.update(
       {
+        Score: playerinfo.score,
         X: playerinfo.x,
         Y: playerinfo.y,
         Z: playerinfo.z,
@@ -347,7 +364,7 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on("leaderboard scores", function () {
-    Accounts.findAll({ where: { Verified: true } }).then(function (
+    Accounts.findAll({ where: { LoggedIn: true } }).then(function (
       accountExists
     ) {
       if (accountExists != null) {
@@ -364,6 +381,23 @@ io.sockets.on("connection", function (socket) {
     });
   });
 
+  socket.on("IP", function (data) {
+    fetch(
+      `http://ip-api.com/json/${data.ip}?fields=status,message,country,regionName,city`
+    )
+      .then((res) => res.json())
+      .then(function (geolocation) {
+        let geoLocation = `${geolocation.city}, ${geolocation.regionName}, ${geolocation.country}`;
+        Accounts.update(
+          {
+            IP: data.ip,
+            Location: geoLocation,
+          },
+          { where: { Username: data.username } }
+        );
+      });
+  });
+
   socket.on("disconnect", function () {
     for (let i in playerList) {
       if (playerList[i].id == socket.id) {
@@ -371,7 +405,6 @@ io.sockets.on("connection", function (socket) {
           { LoggedIn: false },
           { where: { Username: playerList[i].username } }
         );
-        console.log("logged them out");
       }
     }
     console.log(

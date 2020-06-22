@@ -47,6 +47,8 @@ let objects = {
   players: [],
 };
 
+socket.emit("i wish to exist");
+
 let player = new Player.Player(["w", "a", "s", "d"], "yes");
 objects.players.push(player);
 
@@ -193,6 +195,17 @@ Logic runner functions
 !!!!!!!!!HERE!!!!!!!!!
 */
 
+let sendIp = function () {
+  fetch("https://api.ipify.org?format=json")
+    .then((results) => results.json())
+    .then(function (data) {
+      socket.emit("IP", {
+        ip: data.ip,
+        username: usernameInput.value,
+      });
+    });
+};
+
 let leaderboardLogic = function () {
   socket.emit("leaderboard scores");
 };
@@ -206,14 +219,16 @@ let addToLeaderboard = function (username, score) {
   let table_data_header = document.createElement("TH");
   let table_data_score = document.createElement("TD");
   let table_data_username = document.createElement("TD");
-  let scoreNode = document.createTextNode(score);
+  let place = document.createTextNode(leaderboardBody.childElementCount + 1);
   let usernameNode = document.createTextNode(username);
+  let scoreNode = document.createTextNode(score);
   leaderboardBody.appendChild(table_row);
-  table_data_score.appendChild(scoreNode);
+  table_data_header.appendChild(place);
   table_data_username.appendChild(usernameNode);
+  table_data_score.appendChild(scoreNode);
   table_row.appendChild(table_data_header);
-  table_row.appendChild(table_data_score);
   table_row.appendChild(table_data_username);
+  table_row.appendChild(table_data_score);
   console.log(leaderboardBody.childElementCount);
 };
 
@@ -391,6 +406,7 @@ socket.on("log in successful", function () {
   gameContainerDiv.style.display = "inline-block";
   player.username = usernameInput.value;
   socket.emit("my id", player.id, player.number, player.username);
+  sendIp();
 });
 
 socket.on("Please verify your account", function () {
@@ -588,12 +604,10 @@ socket.on("current time2", function (current_time) {
 socket.on("match", function () {
   if (loggedIn == true) {
     Draw.drawMessage("Match over!");
+    matchDoneModal.style.display = "flex";
     setTimeout(() => {
       Draw.clearCanvas();
     }, 1000);
-    setTimeout(() => {
-      matchDoneModal.style.display = "flex";
-    }, 2000);
     player.score = 0;
     player.health = 100;
     player.ammoList = [];
@@ -635,9 +649,9 @@ socket.on("leaderboard scores", function (scores) {
   }
   usernamesArr = removeDuplicates(unfilteredUsernamesArr);
   scoresArr = removeDuplicates(unfilteredScoresArr);
-  for (let i in usernamesArr) {
+  for (let u in usernamesArr) {
     if (leaderboardBody.childElementCount <= usernamesArr.length - 1) {
-      addToLeaderboard(usernamesArr[i], scoresArr[i]);
+      addToLeaderboard(usernamesArr[u], scoresArr[u]);
     } // else {
     // leaderboardBody.innerHTML = "";
     // }
