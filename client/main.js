@@ -616,13 +616,13 @@ socket.on("match", function () {
 });
 
 socket.on("old data", function (x, y, z, rotY, ammoLeft, health, score) {
-  player.mesh.position.x = x;
-  player.mesh.position.y = y;
-  player.mesh.position.z = z;
-  player.mesh.rotation.y = rotY;
-  player.ammoList.length = ammoLeft;
-  player.health = health;
-  player.score = score;
+  player.mesh.position.x = JSON.parse(x);
+  player.mesh.position.y = JSON.parse(y);
+  player.mesh.position.z = JSON.parse(z);
+  player.mesh.rotation.y = JSON.parse(rotY);
+  player.ammoList.length = JSON.parse(ammoLeft);
+  player.health = JSON.parse(health);
+  player.score = JSON.parse(score);
   previousDataAssigned = true;
 });
 

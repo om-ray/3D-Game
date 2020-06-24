@@ -1,12 +1,11 @@
 let express = require("express");
 let app = express();
-let serv = require("http").Server(app);
+let serv = require("https").Server(app);
 let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
 let nodemailer = require("nodemailer");
 let bcrypt = require("bcrypt");
 let fetch = require("node-fetch");
-const { where } = require("sequelize");
 
 let db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
   host: "localhost",
@@ -68,7 +67,7 @@ let current_seconds2;
 let matchIsStarting = false;
 let matchIsEnding = false;
 let betweenMatches = false;
-let duration = 20;
+let duration = 300;
 
 let countdown = function (seconds) {
   seconds = seconds;
@@ -192,7 +191,7 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("Admin data", function () {
     Accounts.findAll({}).then(function (Accounts) {
-        socket.emit("your admin data", Accounts);
+      socket.emit("your admin data", Accounts);
     });
   });
 
