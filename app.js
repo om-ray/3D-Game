@@ -1,6 +1,6 @@
 let express = require("express");
 let app = express();
-let serv = require("https").Server(app);
+let serv = require("http").Server(app);
 let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
 let nodemailer = require("nodemailer");
