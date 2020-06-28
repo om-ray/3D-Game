@@ -13,6 +13,11 @@ body {
   overflow: hidden;
 }
 
+canvas {
+  z-index: 99;
+  pointer-events: none;
+}
+
 #cursor {
   position: absolute;
   background-image: url(../client/Assets/Images/gunCursor.png);

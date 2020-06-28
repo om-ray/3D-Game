@@ -31,6 +31,8 @@ export let sendCamera = function () {
   return camera;
 };
 
+
+
 //Camera Positioning
 camera.position.z = Math.floor(Math.random() * 50);
 camera.position.x = Math.floor(Math.random() * 50);
@@ -143,12 +145,14 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor("#00b0d4");
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.domElement.id = "renderer";
 gameContainerDiv.appendChild(renderer.domElement);
 
 let labelRenderer = new CSS2DRenderer({ antialias: true });
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = 0;
+labelRenderer.domElement.id = "labelRenderer";
 gameContainerDiv.appendChild(labelRenderer.domElement);
 
 export let render = function () {

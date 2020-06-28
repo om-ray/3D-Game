@@ -11,6 +11,7 @@ let db = new Sequelize("3D Game", "postgres", "aq123edsMI.", {
   host: "localhost",
   port: "5432",
   dialect: "postgres",
+  logging: false,
 });
 
 db.authenticate()
@@ -67,7 +68,8 @@ let current_seconds2;
 let matchIsStarting = false;
 let matchIsEnding = false;
 let betweenMatches = false;
-let duration = 300;
+let duration = 30;
+let rest = 10;
 
 let countdown = function (seconds) {
   seconds = seconds;
@@ -81,7 +83,7 @@ let countdown = function (seconds) {
       setTimeout(tick, 1000);
     } else if (seconds <= 0) {
       matchIsEnding = true;
-      between(10);
+      between(rest);
     }
   }
   tick();
@@ -186,8 +188,6 @@ io.sockets.on("connection", function (socket) {
   console.log(
     socket.id + " joined the server on " + new Date().toLocaleString()
   );
-  let player = new Player();
-  playerList.push({ player: player, id: socket.id, username: null, score: 0 });
 
   socket.on("Admin data", function () {
     Accounts.findAll({}).then(function (Accounts) {
@@ -196,6 +196,13 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on("i wish to exist", function () {
+    let player = new Player();
+    playerList.push({
+      player: player,
+      id: socket.id,
+      username: null,
+      score: 0,
+    });
     socket.broadcast.emit("New connection", socket.id);
   });
 
@@ -363,7 +370,7 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on("leaderboard scores", function () {
-    Accounts.findAll({ where: { LoggedIn: true } }).then(function (
+    Accounts.findAll({ where: { Verified: true } }).then(function (
       accountExists
     ) {
       if (accountExists != null) {
@@ -374,6 +381,7 @@ io.sockets.on("connection", function (socket) {
           });
           removeDupes(scoreArray, "username");
           sortArray();
+          accountExists[0].increment(["MatchesWon", 1]);
           console.log(scoreArray);
         }
       }
@@ -418,8 +426,6 @@ io.sockets.on("connection", function (socket) {
 });
 
 setInterval(() => {
-  io.emit("leaderboard scores", scoreArray);
-
   if (matchIsStarting == true) {
     io.emit("Match starting");
   }
@@ -437,7 +443,9 @@ setInterval(() => {
   }
   if (matchIsEnding == true) {
     io.emit("match");
+    io.emit("leaderboard scores", scoreArray);
     matchIsEnding = false;
     betweenMatches = true;
+    Accounts.update({ Score: 0, HP: 100 }, { where: { Verified: true } });
   }
 }, 10);

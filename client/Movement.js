@@ -50,14 +50,14 @@ export let actionChecker = function (player) {
         player.ammoLeft <= 0
       ) {
         Draw.clearCanvas();
-        Draw.drawMessage("You are still reloading!");
+        Draw.drawMessage("You are still reloading!", "top");
         setTimeout(() => {
           Draw.clearCanvas();
         }, 1 * 500);
       }
       if (e.key == "r" && player.ammoLeft > 0) {
         Draw.clearCanvas();
-        Draw.drawMessage("You still have ammo!");
+        Draw.drawMessage("You still have ammo!", "top");
         setTimeout(() => {
           Draw.clearCanvas();
         }, 1 * 500);
@@ -125,7 +125,7 @@ export let attacker = function (player) {
     }
   } else if (player.attack.shooting && player.ammoLeft <= 0) {
     Draw.clearCanvas();
-    Draw.drawMessage("You have no ammo left! Press 'r' to reload!");
+    Draw.drawMessage("You have no ammo left! Press 'r' to reload!", "top");
     setTimeout(() => {
       Draw.clearCanvas();
     }, 1 * 500);

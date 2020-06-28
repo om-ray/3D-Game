@@ -28,9 +28,6 @@ let verifyUsernameInput = document.getElementById("verifyUsernameInput");
 let matchDoneModal = document.getElementById("matchDoneModal");
 let matchOkBtn = document.getElementById("matchOkBtn");
 let matchCloseBtn = document.getElementById("matchCloseBtn");
-let me = document.getElementById("me");
-let myScore = document.getElementById("myScore");
-let scoreTable = document.getElementById("scoreTable");
 let leaderboardBody = document.getElementById("leaderboardBody");
 let cursor = document.getElementById("cursor");
 let previousDataAssigned = false;
@@ -38,7 +35,6 @@ let loggedIn = false;
 let logIn = true;
 let signUp = false;
 let unfilteredUsernamesArr = [];
-let unfilteredScoresArr = [];
 let usernamesArr = [];
 let scoresArr = [];
 
@@ -602,6 +598,8 @@ socket.on("current time2", function (current_time) {
 });
 
 socket.on("match", function () {
+  leaderboardLogic();
+  leaderboardBody.innerHTML = "";
   if (loggedIn == true) {
     Draw.drawMessage("Match over!");
     matchDoneModal.style.display = "flex";
@@ -616,6 +614,7 @@ socket.on("match", function () {
 });
 
 socket.on("old data", function (x, y, z, rotY, ammoLeft, health, score) {
+  leaderboardLogic();
   player.mesh.position.x = JSON.parse(x);
   player.mesh.position.y = JSON.parse(y);
   player.mesh.position.z = JSON.parse(z);
@@ -643,18 +642,15 @@ socket.on("Match starting", function () {
 });
 
 socket.on("leaderboard scores", function (scores) {
+  scoresArr = [];
   for (let i in scores) {
     unfilteredUsernamesArr.push(scores[i].username);
-    unfilteredScoresArr.push(scores[i].score);
+    scoresArr.push(scores[i].score);
   }
   usernamesArr = removeDuplicates(unfilteredUsernamesArr);
-  scoresArr = removeDuplicates(unfilteredScoresArr);
+  console.log(scoresArr);
   for (let u in usernamesArr) {
-    if (leaderboardBody.childElementCount <= usernamesArr.length - 1) {
-      addToLeaderboard(usernamesArr[u], scoresArr[u]);
-    } // else {
-    // leaderboardBody.innerHTML = "";
-    // }
+    addToLeaderboard(usernamesArr[u], scoresArr[u]);
   }
 });
 
@@ -671,7 +667,7 @@ Games main functions
 */
 
 let gameLoop = function () {
-  leaderboardLogic();
+  // leaderboardLogic();
 
   if (loggedIn && previousDataAssigned) {
     sendPlayerInfo();
