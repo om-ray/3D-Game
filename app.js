@@ -68,8 +68,8 @@ let current_seconds2;
 let matchIsStarting = false;
 let matchIsEnding = false;
 let betweenMatches = false;
-let duration = 30;
-let rest = 10;
+let duration = 300;
+let rest = 60;
 
 let countdown = function (seconds) {
   seconds = seconds;
@@ -381,7 +381,7 @@ io.sockets.on("connection", function (socket) {
           });
           removeDupes(scoreArray, "username");
           sortArray();
-          accountExists[0].increment(["MatchesWon", 1]);
+          accountExists[0].increment("MatchesWon");
           console.log(scoreArray);
         }
       }
