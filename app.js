@@ -56,6 +56,7 @@ app.get("/admin", function (req, res) {
 app.use("/client", express.static(__dirname + "/client"));
 app.use("/dist", express.static(__dirname + "/dist"));
 app.use("/Assets", express.static(__dirname + "/client/Assets"));
+app.use("/node_modules", express.static(__dirname + "/node_modules"));
 
 serv.listen(2000);
 Accounts.update({ LoggedIn: false }, { where: { LoggedIn: true } });

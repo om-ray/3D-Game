@@ -31,8 +31,6 @@ export let sendCamera = function () {
   return camera;
 };
 
-
-
 //Camera Positioning
 camera.position.z = Math.floor(Math.random() * 50);
 camera.position.x = Math.floor(Math.random() * 50);
@@ -88,9 +86,15 @@ export let drawSkySphereAndGround = function () {
   skyBBoxHelper.visible = false;
 
   //Ground
-  let groudGeometry = new THREE.BufferGeometry().fromGeometry(
-    new THREE.PlaneGeometry(500, 500)
-  );
+  let groundGeometry = new THREE.PlaneGeometry(500, 500, 1000, 1000);
+  noise.seed(Math.random);
+
+  for (let i in groundGeometry.vertices) {
+    let vertex = groundGeometry.vertices[i];
+    let value = noise.perlin2(vertex.x / 500, vertex.y / 500);
+    vertex.z = Math.abs(value) * 25;
+  }
+
   grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
   grassTexture.repeat.set(5000, 5000);
   let groundMaterial = new THREE.MeshStandardMaterial({
@@ -98,11 +102,11 @@ export let drawSkySphereAndGround = function () {
     wireframe: false,
     roughness: 1,
   });
-  let ground = new THREE.Mesh(groudGeometry, groundMaterial);
+  let ground = new THREE.Mesh(groundGeometry, groundMaterial);
   ground.receiveShadow = true;
   scene.add(ground);
   ground.rotation.x = 98.962;
-  ground.position.y = -0.5;
+  ground.position.y = -10;
 
   return skyBBox;
 };
